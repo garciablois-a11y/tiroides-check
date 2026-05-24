@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Tiroides Check</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--t:#0a7c68;--tl:#e8f5f2;--tm:#5bb5a2;--td:#065a4a;--bd:#ddd9d3;--tx:#1a1816;--mu:#8a857f;--cr:#faf8f4;--r:10px}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--cr);color:var(--tx);font-size:14px;min-height:100vh}
+.h{display:none!important}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--tx);background:white;border:1.5px solid var(--bd);border-radius:var(--r);padding:10px 13px;width:100%;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(10,124,104,.1)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%238a857f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+.btn{font-family:inherit;font-size:14px;font-weight:500;padding:10px 20px;border-radius:var(--r);cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
+.bp{background:var(--t);color:white}.bp:hover{background:var(--td)}.bp:disabled{background:#aaa;cursor:not-allowed}
+.bs{background:white;color:var(--tx);border:1.5px solid var(--bd)}.bs:hover{border-color:var(--tm)}
+.bd{background:white;color:#c0392b;border:1.5px solid #f5c5c0}.bd:hover{background:#fde8e4}
+.bw{width:100%;justify-content:center}
+.card{background:white;border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem}
+.f{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem}
+label{font-size:13px;font-weight:500}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.met{background:#f5f3ef;border-radius:8px;padding:.875rem 1rem}
+.ml{font-size:11px;color:var(--mu);margin-bottom:3px}
+.mv{font-size:20px;font-weight:500}
+.ms{font-size:11px;color:var(--mu);margin-top:2px}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.bgt{background:var(--tl);color:var(--td);font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-flex}
+.bga{background:#faeeda;color:#633806;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-flex}
+.bgr{background:#fde8e4;color:#a32d2d;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-flex}
+.nav{background:var(--td);display:flex;align-items:center;height:52px;padding:0 1.5rem;gap:.5rem;position:sticky;top:0;z-index:10}
+.nb{font-size:16px;color:white;font-weight:500;flex:1;display:flex;align-items:center;gap:8px}
+.nl{padding:6px 13px;border-radius:7px;color:rgba(255,255,255,.7);font-size:13px;cursor:pointer;border:none;background:transparent;font-family:inherit}
+.nl:hover,.nl.a{background:rgba(255,255,255,.12);color:white}
+.nu{display:flex;align-items:center;gap:8px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--tm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:white}
+.lo{font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;background:none;border:none;font-family:inherit}.lo:hover{color:white}
+.pg{padding:1.5rem;max-width:900px;margin:0 auto}
+.st{font-size:22px;font-weight:500;margin-bottom:.25rem}
+.sub{font-size:14px;color:var(--mu);margin-bottom:1.5rem}
+.sp{width:16px;height:16px;border:2px solid var(--bd);border-top-color:var(--t);border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.tli{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)}
+.tli:last-child{border-bottom:none}
+.tld{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.dg{background:var(--tl)}.da{background:#faeeda}.dp{background:#f0eeea}
+.tt{font-size:14px;font-weight:500;margin-bottom:3px}
+.tm{font-size:12px;color:var(--mu)}
+.te{font-size:13px;margin-top:8px;line-height:1.7;background:#f5f3ef;padding:12px;border-radius:8px;white-space:pre-line;border-left:3px solid var(--t)}
+.war{background:#fef9ec;border:1px solid #f0d070;border-radius:var(--r);padding:13px 15px;font-size:13px;color:#7a5c00;line-height:1.6}
+.inf{background:var(--tl);border:1px solid rgba(10,124,104,.2);border-radius:var(--r);padding:13px 15px;font-size:13px;color:var(--td);line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.aib{border:1.5px solid #cecbf6;border-radius:var(--r);overflow:hidden;margin-top:1rem}
+.aih{background:#eeedfe;padding:11px 15px;font-size:13px;font-weight:500;color:#3c3489;display:flex;align-items:center;gap:8px}
+.aibo{padding:15px}
+.air{border-left:3px solid var(--t);padding:11px 14px;margin-bottom:1rem;font-size:13px;color:var(--td);line-height:1.7;background:var(--tl);border-radius:0 8px 8px 0}
+.ep{background:#faf8f4;border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden}
+.eh{background:white;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:12px;color:var(--mu)}
+.eb{padding:14px;font-size:13px;line-height:1.8;white-space:pre-line;outline:none}
+.pr{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--bd);cursor:pointer}
+.pr:hover{opacity:.8}.pr:last-child{border-bottom:none}
+.pav{width:36px;height:36px;border-radius:50%;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--td);flex-shrink:0}
+.tok{background:var(--tl);color:var(--td);font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
+.thi{background:#fde8e4;color:#a32d2d;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
+.tlo{background:#faeeda;color:#633806;font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:14px;width:100%;max-width:620px}
+.mh{padding:1.25rem 1.5rem;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.mt2{font-size:17px;font-weight:500}
+.mx{width:30px;height:30px;border-radius:50%;border:1px solid var(--bd);background:white;cursor:pointer;font-size:18px;color:var(--mu);display:flex;align-items:center;justify-content:center}
+.mb2{padding:1.5rem;max-height:75vh;overflow-y:auto}
+.mf{padding:1rem 1.5rem;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}
+.dc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+.dcc{background:#f5f3ef;border-radius:8px;padding:10px 12px}
+.dcl{font-size:11px;color:var(--mu);margin-bottom:3px}
+.dcv{font-size:13px;font-weight:500}
+.uz{border:2px dashed var(--bd);border-radius:var(--r);padding:2.5rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:white;position:relative}
+.uz:hover,.uz.ov{border-color:var(--t);background:var(--tl)}
+.uz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.prev-img{max-width:100%;max-height:200px;border-radius:8px;border:1px solid var(--bd);margin-top:.875rem;display:block;margin-left:auto;margin-right:auto}
+.ro,.co{display:flex;align-items:center;gap:9px;padding:9px 13px;background:white;border:1.5px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:all .15s;margin-bottom:6px;font-size:14px}
+.ro:hover,.co:hover{border-color:var(--tm);background:var(--tl)}
+.ro.sel,.co.sel{border-color:var(--t);background:var(--tl);color:var(--td);font-weight:500}
+.rd{width:15px;height:15px;border-radius:50%;border:2px solid var(--bd);flex-shrink:0;transition:all .15s}
+.ro.sel .rd{border-color:var(--t);background:var(--t);box-shadow:inset 0 0 0 3px white}
+.cb{width:15px;height:15px;border-radius:4px;border:2px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.co.sel .cb{border-color:var(--t);background:var(--t)}
+.co.sel .cb::after{content:'';width:8px;height:5px;border-left:2px solid white;border-bottom:2px solid white;transform:rotate(-45deg) translateY(-1px)}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stepper{display:flex;align-items:center;gap:5px;margin-bottom:1.5rem;flex-wrap:wrap}
+.sn{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.sd{background:var(--tl);color:var(--t)}.sa{background:var(--t);color:white}.sw{background:#f0eeea;color:var(--mu)}
+.sl{flex:1;height:1px;min-width:15px}
+.pending-banner{background:#fef9ec;border:1px solid #f0d070;border-radius:var(--r);padding:16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:1rem}
+.pending-banner svg{flex-shrink:0;margin-top:1px}
+</style>
+</head>
+<body>
+
+<!-- KEY SCREEN -->
+<div id="key-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem">
+<div class="card" style="max-width:420px;width:100%">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem">
+    <div style="width:40px;height:40px;background:var(--td);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.2 4.7 3 6.1V20h8v-4.9c1.8-1.4 3-3.6 3-6.1 0-4-3-7-7-7z" fill="white" opacity=".9"/><circle cx="12" cy="9" r="2.5" fill="rgba(255,255,255,.4)"/></svg>
+    </div>
+    <div><div style="font-size:17px;font-weight:500;color:var(--td)">Tu Tiroides Check</div><div style="font-size:12px;color:var(--mu)">Configuración inicial</div></div>
+  </div>
+  <div class="war" style="margin-bottom:1.25rem">Solo para uso interno de prueba. La API key se guarda en tu navegador.</div>
+  <div class="f"><label>Anthropic API Key</label><input type="password" id="key-input" placeholder="sk-ant-api03-..."><div style="font-size:12px;color:var(--mu)">Obtén tu key en <b>console.anthropic.com</b> → API Keys</div></div>
+  <div id="key-err" class="h" style="font-size:12px;color:#c0392b;margin-bottom:.75rem"></div>
+  <button class="btn bp bw" onclick="saveKey()">Guardar y continuar</button>
+</div>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen" class="h" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem">
+<div class="card" style="max-width:400px;width:100%">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.75rem">
+    <div style="width:38px;height:38px;background:var(--td);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.2 4.7 3 6.1V20h8v-4.9c1.8-1.4 3-3.6 3-6.1 0-4-3-7-7-7z" fill="white" opacity=".9"/><circle cx="12" cy="9" r="2.5" fill="rgba(255,255,255,.4)"/></svg>
+    </div>
+    <div><div style="font-size:17px;font-weight:500;color:var(--td)">Tu Tiroides Check</div><div style="font-size:12px;color:var(--mu)">Seguimiento tiroideo online · Chile</div></div>
+  </div>
+  <div style="display:flex;border-bottom:1px solid var(--bd);margin-bottom:1.25rem">
+    <div id="tab-li" style="flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--t);border-bottom:2px solid var(--t)" onclick="stab('li')">Iniciar sesión</div>
+    <div id="tab-rg" style="flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--mu);border-bottom:2px solid transparent" onclick="stab('rg')">Registrarse</div>
+  </div>
+  <div id="li-f">
+    <div class="f"><label>Correo</label><input type="email" id="li-e" placeholder="correo@ejemplo.com"></div>
+    <div class="f"><label>Contraseña</label><input type="password" id="li-p" placeholder="••••••"></div>
+    <div id="li-err" class="h" style="font-size:12px;color:#c0392b;margin-bottom:.75rem">Correo o contraseña incorrectos.</div>
+    <button class="btn bp bw" onclick="doLi()">Entrar</button>
+  </div>
+  <div id="rg-f" class="h">
+    <div class="two"><div class="f"><label>Nombre</label><input type="text" id="rg-n" placeholder="Nombre"></div><div class="f"><label>Apellido</label><input type="text" id="rg-a" placeholder="Apellido"></div></div>
+    <div class="f"><label>Correo</label><input type="email" id="rg-e" placeholder="correo@ejemplo.com"></div>
+    <div class="f"><label>Contraseña</label><input type="password" id="rg-p" placeholder="Mínimo 6 caracteres"></div>
+    <div id="rg-err" class="h" style="font-size:12px;color:#c0392b;margin-bottom:.75rem"></div>
+    <button class="btn bp bw" onclick="doRg()">Crear cuenta →</button>
+  </div>
+  <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--bd)">
+    <div style="font-size:12px;color:var(--mu);margin-bottom:8px">Accesos de demo:</div>
+    <button onclick="la('p')" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;margin-bottom:6px;font-size:13px;background:white;font-family:inherit" onmouseover="this.style.borderColor='var(--tm)'" onmouseout="this.style.borderColor='var(--bd)'">
+      <span>María González · <span style="color:var(--mu)">paciente</span></span><span style="color:var(--mu);font-size:11px">maria@demo.cl</span>
+    </button>
+    <button onclick="la('d')" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;font-size:13px;background:white;font-family:inherit" onmouseover="this.style.borderColor='var(--tm)'" onmouseout="this.style.borderColor='var(--bd)'">
+      <span>Dra. Espinoza · <span style="color:var(--mu)">médico</span></span><span style="color:var(--mu);font-size:11px">dra@tiroides.cl</span>
+    </button>
+  </div>
+  <div style="margin-top:.875rem;text-align:right"><button onclick="resetKey()" style="font-size:11px;color:var(--mu);background:none;border:none;cursor:pointer;font-family:inherit">Cambiar API key</button></div>
+</div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="onboard-screen" class="h" style="min-height:100vh;background:var(--cr)">
+  <div style="background:var(--td);height:52px;display:flex;align-items:center;padding:0 1.5rem">
+    <div style="font-size:16px;color:white;font-weight:500;display:flex;align-items:center;gap:8px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.2 4.7 3 6.1V20h8v-4.9c1.8-1.4 3-3.6 3-6.1 0-4-3-7-7-7z" fill="white" opacity=".9"/></svg>
+      Tu Tiroides Check
+    </div>
+  </div>
+  <div style="max-width:580px;margin:0 auto;padding:2rem 1.5rem">
+    <div class="st">Completa tu ficha médica</div>
+    <div class="sub">Solo lo harás una vez. Toma menos de 3 minutos.</div>
+    <div class="stepper" id="ob-stepper"></div>
+    <div class="card" id="ob-body"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="h">
+  <nav class="nav">
+    <div class="nb">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.2 4.7 3 6.1V20h8v-4.9c1.8-1.4 3-3.6 3-6.1 0-4-3-7-7-7z" fill="white" opacity=".9"/></svg>
+      Tu Tiroides Check
+    </div>
+    <div id="nls" style="display:flex;gap:4px"></div>
+    <div class="nu">
+      <div class="av" id="nav-av">MG</div>
+      <span id="nav-nm" style="font-size:13px;color:rgba(255,255,255,.8)"></span>
+      <button class="lo" onclick="doLo()">Salir</button>
+    </div>
+  </nav>
+  <div id="pc"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="mh"><span class="mt2" id="mtitle"></span><button class="mx" onclick="cm()">×</button></div>
+    <div class="mb2" id="mbody"></div>
+    <div class="mf" id="mfoot"></div>
+  </div>
+</div>
+
+<script>
+let API_KEY = localStorage.getItem('ttc_key') || '';
+const USERS = {
+  'maria@demo.cl':{id:'p1',pass:'demo123',role:'patient',name:'María González'},
+  'dra@tiroides.cl':{id:'d1',pass:'demo123',role:'doctor',name:'Dra. Carolina Espinoza'}
+};
+const PROF = {
+  p1:{dx:'Más de 10 años',causa:'Tiroiditis de Hashimoto',dosis:100,marca:'Eutirox',
+      admin:'En ayunas, 30–60 min antes del desayuno',peso:68,talla:162,
+      bienest:'Algunos síntomas leves',sint:['Cansancio','Frío frecuente'],notas:'',
+      semana:[100,100,100,100,100,112,112],onboarded:true}
+};
+const REV = [
+  {id:'r1',pid:'p1',date:'2025-05-10',tsh:6.8,t4l:0.9,st:'sent',
+   reason:'TSH 6.8 sobre rango normal (ref 0.5–4.5 mUI/L). T4 levemente bajo. Considerando síntomas de cansancio y frío, se recomienda subir dosis. Esquema sugerido: Lunes a viernes 100 mcg, sábado y domingo 112 mcg.',
+   di:112,semana_nueva:[100,100,100,100,100,112,112],ac:'subir',
+   email:'Estimada María,\n\nTus exámenes del 10 de mayo muestran TSH 6.8, sobre el rango normal. Subimos tu levotiroxina así:\n\n• Lunes a viernes: 100 mcg\n• Sábado y domingo: 112 mcg\n\nSiempre en ayunas, 30–60 min antes del desayuno.\n\nRepite TSH y T4 libre en 6–8 semanas.\n\nUn saludo cordial,\nDra. Carolina Espinoza\nTu Tiroides Check'},
+  {id:'r2',pid:'p1',date:'2024-10-22',tsh:3.2,t4l:1.1,st:'sent',
+   reason:'TSH y T4L normales. Paciente asintomática. Se mantiene esquema actual.',
+   di:100,semana_nueva:[100,100,100,100,100,100,100],ac:'mantener',
+   email:'Estimada María,\n\nTus exámenes de octubre están perfectos: TSH 3.2, T4L 1.1. Mantén el esquema actual y repite en 6 meses.\n\nUn saludo cordial,\nDra. Carolina Espinoza\nTu Tiroides Check'}
+];
+let CU=null, CP=null, curB64=null, curMime=null;
+let OS=1, OD={};
+
+// KEY
+function saveKey(){const k=document.getElementById('key-input').value.trim();if(!k.startsWith('sk-ant-')){const e=document.getElementById('key-err');e.textContent='La key debe empezar con sk-ant-';e.classList.remove('h');return}API_KEY=k;localStorage.setItem('ttc_key',k);document.getElementById('key-screen').style.display='none';document.getElementById('auth-screen').classList.remove('h')}
+function resetKey(){localStorage.removeItem('ttc_key');API_KEY='';document.getElementById('auth-screen').classList.add('h');document.getElementById('key-screen').style.display='flex'}
+window.addEventListener('load',()=>{if(API_KEY){document.getElementById('key-screen').style.display='none';document.getElementById('auth-screen').classList.remove('h')}});
+
+// AUTH
+function stab(t){const a=t==='li';document.getElementById('tab-li').style.cssText=`flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:${a?'var(--t)':'var(--mu)'};border-bottom:2px solid ${a?'var(--t)':'transparent'}`;document.getElementById('tab-rg').style.cssText=`flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:${!a?'var(--t)':'var(--mu)'};border-bottom:2px solid ${!a?'var(--t)':'transparent'}`;document.getElementById('li-f').classList.toggle('h',!a);document.getElementById('rg-f').classList.toggle('h',a)}
+function doLi(){const e=document.getElementById('li-e').value.trim().toLowerCase(),p=document.getElementById('li-p').value,u=USERS[e];if(!u||u.pass!==p){document.getElementById('li-err').classList.remove('h');return}document.getElementById('li-err').classList.add('h');CU=u;afterLogin()}
+function doRg(){const n=document.getElementById('rg-n').value.trim(),a=document.getElementById('rg-a').value.trim(),e=document.getElementById('rg-e').value.trim().toLowerCase(),p=document.getElementById('rg-p').value,err=document.getElementById('rg-err');if(!n||!a){err.textContent='Completa nombre y apellido.';err.classList.remove('h');return}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){err.textContent='Correo inválido.';err.classList.remove('h');return}if(p.length<6){err.textContent='Mínimo 6 caracteres.';err.classList.remove('h');return}if(USERS[e]){err.textContent='Correo ya registrado.';err.classList.remove('h');return}USERS[e]={id:'p'+Date.now(),pass:p,role:'patient',name:n+' '+a};CU=USERS[e];afterLogin()}
+function la(r){CU=r==='p'?USERS['maria@demo.cl']:USERS['dra@tiroides.cl'];afterLogin()}
+function doLo(){CU=null;document.getElementById('app').classList.add('h');document.getElementById('auth-screen').classList.remove('h')}
+function afterLogin(){document.getElementById('auth-screen').classList.add('h');if(CU.role==='patient'&&!PROF[CU.id]?.onboarded){startOnboard()}else{startApp()}}
+
+// ── ONBOARDING ──
+const OB_STEPS=['Diagnóstico','Tratamiento','Síntomas','Listo'];
+function startOnboard(){OS=1;OD={};document.getElementById('onboard-screen').classList.remove('h');renderOS()}
+function renderStepper(){document.getElementById('ob-stepper').innerHTML=OB_STEPS.map((s,i)=>{const n=i+1,done=n<OS,active=n===OS;const bg=done?'var(--tl)':active?'var(--t)':'#f0eeea';const col=done?'var(--t)':active?'white':'var(--mu)';const tcol=done?'var(--tm)':active?'var(--t)':'var(--mu)';return(i>0?`<div class="sl" style="background:${done?'var(--tm)':'var(--bd)'}"></div>`:'')+`<div style="display:flex;align-items:center;gap:4px;font-size:12px;color:${tcol}"><div class="sn" style="background:${bg};color:${col}">${done?'✓':n}</div>${s}</div>`}).join('')}
+
+function renderOS(){
+  renderStepper();
+  const b=document.getElementById('ob-body');
+  if(OS===1) b.innerHTML=`
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Diagnóstico</div>
+    <div class="f"><label>¿Hace cuánto te diagnosticaron hipotiroidismo?</label>
+      <select id="od-dx"><option value="">Seleccionar...</option><option>Hace menos de 1 año</option><option>1 – 3 años</option><option>3 – 5 años</option><option>5 – 10 años</option><option>Más de 10 años</option></select></div>
+    <div class="f"><label>Causa conocida</label>
+      <div id="od-causa">${['Tiroiditis de Hashimoto','Post-cirugía tiroidea','Post-radioyodo','Hipotiroidismo congénito','Sin causa identificada / No sé'].map(c=>`<div class="ro" onclick="selR(this,'od-causa')" data-v="${c}"><span class="rd"></span>${c}</div>`).join('')}</div></div>
+    <div class="war">Este programa es exclusivo para hipotiroidismo tratado con levotiroxina. Embarazo, nódulos, hipertiroidismo o cáncer de tiroides requieren consulta presencial.</div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1.25rem"><button class="btn bp" onclick="obNext(1)">Continuar →</button></div>`;
+
+  else if(OS===2) b.innerHTML=`
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Tratamiento</div>
+    <div class="two"><div class="f"><label>Marca del medicamento</label><select id="od-marca"><option value="">Seleccionar...</option><option>Eutirox</option><option>Levotiroxina Sandoz</option><option>Levotiroxina Chile</option><option>Sintrocid</option><option>Otra</option></select></div><div class="f"><label>Dosis base (mcg)</label><input type="number" id="od-dosis" placeholder="100" value="${OD.dosis||''}" oninput="syncDosis(this.value)"></div></div>
+    <div class="f"><label>Dosis por día de la semana</label>
+      <div style="font-size:12px;color:var(--mu);margin-bottom:8px">Si tomas la misma dosis todos los días, déjala igual. Si varía, cambia cada día.</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+        ${['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((d,i)=>`<div style="text-align:center"><div style="font-size:11px;font-weight:500;color:var(--mu);margin-bottom:4px">${d}</div><input type="number" id="od-d${i}" placeholder="100" style="text-align:center;padding:8px 4px;font-size:13px" value="${OD.semana?OD.semana[i]:OD.dosis||''}"></div>`).join('')}
+      </div></div>
+    <div class="two" style="margin-top:.5rem"><div class="f"><label>Peso (kg)</label><input type="number" id="od-peso" placeholder="65" value="${OD.peso||''}"></div><div class="f"><label>Talla (cm)</label><input type="number" id="od-talla" placeholder="165" value="${OD.talla||''}"></div></div>
+    <div class="f"><label>¿Cómo tomas la levotiroxina?</label>
+      <div id="od-admin">${['En ayunas, 30–60 min antes del desayuno','En ayunas, menos de 30 min','Con o después del desayuno','No siempre / olvido dosis'].map(a=>`<div class="ro" onclick="selR(this,'od-admin')" data-v="${a}"><span class="rd"></span>${a}</div>`).join('')}</div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:1.25rem"><button class="btn bs" onclick="OS=1;renderOS()">← Volver</button><button class="btn bp" onclick="obNext(2)">Continuar →</button></div>`;
+
+  else if(OS===3) b.innerHTML=`
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Síntomas actuales</div>
+    <div class="f"><label>¿Cómo te sientes hoy?</label>
+      <div id="od-bien">${['Me siento bien, sin síntomas','Tengo algunos síntomas leves','Síntomas moderados que afectan mi día','Síntomas importantes / me siento muy mal'].map(b=>`<div class="ro" onclick="selR(this,'od-bien')" data-v="${b}"><span class="rd"></span>${b}</div>`).join('')}</div></div>
+    <div class="f"><label>Marca todos los síntomas que tienes ahora</label>
+      <div class="sgrid" id="od-sint">${['Cansancio o fatiga','Aumento de peso','Intolerancia al frío','Piel seca o descamada','Caída de cabello','Estreñimiento','Depresión o ánimo bajo','Problemas de memoria o concentración','Calambres musculares','Voz ronca','Hinchazón (cara, manos, piernas)','Bradicardia (corazón lento)','Ninguno'].map(s=>`<div class="co" onclick="togC(this,'od-sint')" data-v="${s}"><span class="cb"></span>${s}</div>`).join('')}</div></div>
+    <div class="f"><label>¿Algo más que quieras contarle a la Dra.? (opcional)</label><textarea id="od-notas" placeholder="Otras enfermedades, medicamentos que tomas, cambios recientes..."></textarea></div>
+    <div style="display:flex;justify-content:space-between;margin-top:1.25rem"><button class="btn bs" onclick="OS=2;renderOS()">← Volver</button><button class="btn bp" onclick="obNext(3)">Guardar ficha →</button></div>`;
+
+  else if(OS===4) b.innerHTML=`
+    <div style="text-align:center;padding:1.5rem 0">
+      <div style="width:56px;height:56px;background:var(--tl);border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="font-size:18px;font-weight:500;margin-bottom:.5rem">¡Ficha completa!</div>
+      <div style="font-size:14px;color:var(--mu);margin-bottom:1.5rem">Ya puedes subir tus exámenes. La Dra. Espinoza los revisará y te enviará las indicaciones.</div>
+      <button class="btn bp" onclick="finishOnboard()">Ir a mi panel →</button>
+    </div>`;
+}
+
+function syncDosis(v){for(let i=0;i<7;i++){const el=document.getElementById('od-d'+i);if(el&&!el.value)el.value=v}}
+function selR(el,gid){document.querySelectorAll('#'+gid+' .ro').forEach(o=>o.classList.remove('sel'));el.classList.add('sel')}
+function togC(el,gid){if(el.dataset.v==='Ninguno'){document.querySelectorAll('#'+gid+' .co').forEach(o=>o!==el&&o.classList.remove('sel'))}else{document.querySelectorAll('#'+gid+' .co[data-v="Ninguno"]').forEach(o=>o.classList.remove('sel'))}el.classList.toggle('sel')}
+
+function obNext(s){
+  if(s===1){const dx=document.getElementById('od-dx').value;const c=document.querySelector('#od-causa .ro.sel');if(!dx)return alert('Selecciona cuánto tiempo llevas con el diagnóstico.');OD.dx=dx;OD.causa=c?c.dataset.v:'Sin causa identificada';OS=2;}
+  else if(s===2){const d=document.getElementById('od-dosis').value;const m=document.getElementById('od-marca').value;const pe=document.getElementById('od-peso').value;const ta=document.getElementById('od-talla').value;const ad=document.querySelector('#od-admin .ro.sel');if(!d||!m)return alert('Completa dosis y marca.');if(!pe||!ta)return alert('Completa peso y talla.');OD.dosis=parseInt(d);OD.marca=m;OD.peso=parseInt(pe);OD.talla=parseInt(ta);OD.admin=ad?ad.dataset.v:'No especificada';OD.semana=['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((_,i)=>parseInt(document.getElementById('od-d'+i).value)||parseInt(d));OS=3;}
+  else if(s===3){const bi=document.querySelector('#od-bien .ro.sel');if(!bi)return alert('Indica cómo te sientes hoy.');OD.bienest=bi.dataset.v;OD.sint=[...document.querySelectorAll('#od-sint .co.sel')].map(e=>e.dataset.v);if(!OD.sint.length)OD.sint=['Ninguno'];OD.notas=document.getElementById('od-notas').value;PROF[CU.id]={...OD,onboarded:true};OS=4;}
+  renderOS();
+}
+function finishOnboard(){document.getElementById('onboard-screen').classList.add('h');startApp()}
+
+// ── APP ──
+function startApp(){
+  document.getElementById('app').classList.remove('h');
+  const av=(CU.name||'').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('nav-av').textContent=av;
+  document.getElementById('nav-nm').textContent=(CU.name||'').split(' ').slice(0,2).join(' ');
+  const links=CU.role==='doctor'
+    ?[['dash','Dashboard'],['pats','Pacientes'],['revs','Revisiones']]
+    :[['panel','Mi panel'],['upload','Subir examen'],['perfil','Mi perfil']];
+  document.getElementById('nls').innerHTML=links.map(([id,l])=>`<button class="nl" id="nl-${id}" onclick="nav('${id}')">${l}</button>`).join('');
+  nav(CU.role==='doctor'?'dash':'panel');
+}
+
+function nav(p){CP=p;document.querySelectorAll('.nl').forEach(l=>l.classList.remove('a'));const nl=document.getElementById('nl-'+p);if(nl)nl.classList.add('a');const pc=document.getElementById('pc');if(p==='panel')rPanel(pc);else if(p==='upload')rUpload(pc);else if(p==='perfil')rPerfil(pc);else if(p==='dash')rDash(pc);else if(p==='pats')rPats(pc);else if(p==='revs')rRevs(pc)}
+
+// ── PATIENT PANEL ──
+function rPanel(pc){
+  const pr=PROF[CU.id]||{};
+  const myR=REV.filter(r=>r.pid===CU.id);
+  const lat=myR.find(r=>r.st==='sent');
+  const pending=myR.filter(r=>r.st==='pending');
+  const tc=lat?(lat.tsh>4.5?'#c0392b':lat.tsh<0.5?'#ba7517':'var(--t)'):'var(--tx)';
+  const semana=pr.semana||Array(7).fill(pr.dosis||100);
+  const dias=['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
+
+  pc.innerHTML=`<div class="pg"><div class="st">Hola, ${CU.name.split(' ')[0]} 👋</div><div class="sub">Tu panel de seguimiento tiroideo.</div>
+  <div class="mg">
+    <div class="met"><div class="ml">Último TSH</div><div class="mv" style="color:${tc}">${lat?lat.tsh:'—'}</div><div class="ms">${lat?lat.date:''}</div></div>
+    <div class="met"><div class="ml">Marca</div><div class="mv" style="font-size:16px">${pr.marca||'—'}</div><div class="ms">${pr.dosis||'—'} mcg base</div></div>
+    <div class="met"><div class="ml">Próximo control</div><div class="mv" style="font-size:15px">Jul 2025</div><div class="ms">Recordatorio activo</div></div>
+  </div>
+
+  ${pending.length?`<div class="pending-banner">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ba7517" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div><b>Examen en revisión</b><br><span style="color:var(--mu)">La Dra. Espinoza está revisando tu examen. Recibirás las indicaciones en tu correo una vez que las apruebe.</span></div>
+  </div>`:''}
+
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start">
+    <div class="card">
+      <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Historial de controles</div>
+      ${myR.filter(r=>r.st==='sent').length?myR.filter(r=>r.st==='sent').map(r=>`<div class="tli">
+        <div class="tld dg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div style="flex:1">
+          <div class="tt">${r.date} <span class="bgt" style="margin-left:5px;font-size:10px">Revisado por la Dra.</span></div>
+          <div class="tm">TSH: <b>${r.tsh}</b>${r.t4l?' · T4L: <b>'+r.t4l+'</b>':''} · Dosis indicada: <b>${r.di||'—'} mcg</b></div>
+          ${r.email?`<div class="te">${r.email}</div>`:''}
+        </div>
+      </div>`).join(''):'<p style="color:var(--mu);font-size:13px;padding:.5rem 0">Aún no tienes controles aprobados. Sube tu primer examen.</p>'}
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Dosis semanal actual</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+          ${dias.map((d,i)=>{const dose=semana[i];const isBase=dose===semana[0];return`<div style="text-align:center"><div style="font-size:10px;color:var(--mu);margin-bottom:3px">${d}</div><div style="background:${isBase?'#f5f3ef':'var(--tl)'};border-radius:6px;padding:6px 2px;font-size:12px;font-weight:500;color:${isBase?'var(--tx)':'var(--td)'}">${dose}</div></div>`}).join('')}
+        </div>
+      </div>
+      <button class="btn bp bw" onclick="nav('upload')" style="font-size:14px;padding:13px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Subir examen
+      </button>
+    </div>
+  </div></div>`;
+}
+
+// ── UPLOAD — solo sube, no muestra resultado ──
+function rUpload(pc){
+  curB64=null;curMime=null;
+  pc.innerHTML=`<div class="pg" style="max-width:520px">
+  <div class="st">Subir examen</div>
+  <div class="sub">Sube tu foto o PDF. La Dra. Espinoza lo revisará y te enviará las indicaciones.</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px"><div class="sn sa">1</div><span>Sube tu examen</span></div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px"><div class="sn sw">2</div><span style="color:var(--mu)">La Dra. revisa y aprueba las indicaciones</span></div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px"><div class="sn sw">3</div><span style="color:var(--mu)">Recibes las indicaciones en tu panel</span></div>
+    </div>
+    <div style="height:1px;background:var(--bd);margin-bottom:1.25rem"></div>
+    <div class="uz" id="uz">
+      <input type="file" accept=".jpg,.jpeg,.png,.heic,.pdf" onchange="onFile(this)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--tm)" stroke-width="1.5" style="margin:0 auto 8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      <p style="font-size:13px;color:var(--mu)"><b style="color:var(--t)">Haz clic o arrastra</b> tu examen<br><span style="font-size:11px">Foto (JPG/PNG) o PDF</span></p>
+    </div>
+    <div id="prev"></div>
+    <div id="ures"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
+      <button class="btn bs" onclick="nav('panel')">Cancelar</button>
+      <button class="btn bp" id="ubtn" onclick="subUp()" disabled style="opacity:.5">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        Enviar a la Dra.
+      </button>
+    </div>
+  </div></div>`;
+  const uz=document.getElementById('uz');
+  uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('ov')});
+  uz.addEventListener('dragleave',()=>uz.classList.remove('ov'));
+  uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('ov');if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0])});
+}
+
+function onFile(i){if(i.files[0])processFile(i.files[0])}
+function processFile(file){
+  const isPdf=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
+  const prev=document.getElementById('prev');
+  if(isPdf){
+    prev.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:.875rem;font-size:13px;color:var(--mu)"><div class="sp"></div>Cargando PDF...</div>`;
+    const reader=new FileReader();
+    reader.onload=async e=>{
+      try{
+        if(!window.pdfjsLib)await loadPdfJs();
+        const pdf=await window.pdfjsLib.getDocument({data:e.target.result}).promise;
+        const page=await pdf.getPage(1);
+        const vp=page.getViewport({scale:1.5});
+        const canvas=document.createElement('canvas');
+        canvas.width=vp.width;canvas.height=vp.height;
+        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+        curMime='image/jpeg';
+        const dataUrl=canvas.toDataURL('image/jpeg',.85);
+        curB64=dataUrl.split(',')[1];
+        prev.innerHTML=`<img src="${dataUrl}" class="prev-img">`;
+        enableBtn();
+      }catch(err){prev.innerHTML=`<div class="war" style="margin-top:.875rem">⚠ Error: ${err.message}</div>`}
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    const reader=new FileReader();
+    reader.onload=e=>{const d=e.target.result;curMime=file.type||'image/jpeg';curB64=d.split(',')[1];prev.innerHTML=`<img src="${d}" class="prev-img">`;enableBtn()};
+    reader.readAsDataURL(file);
+  }
+}
+function loadPdfJs(){return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';s.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';setTimeout(res,300)};s.onerror=()=>rej(new Error('No se pudo cargar PDF.js'));document.head.appendChild(s)})}
+function enableBtn(){const btn=document.getElementById('ubtn');if(btn){btn.disabled=false;btn.style.opacity='1'}}
+
+async function subUp(){
+  if(!curB64){alert('Sube un archivo primero.');return}
+  const pr=PROF[CU.id]||{dosis:100,marca:'Eutirox',admin:'En ayunas, 30–60 min',bienest:'No especificado',sint:[]};
+  const btn=document.getElementById('ubtn');
+  btn.disabled=true;btn.innerHTML='<div class="sp"></div> Enviando...';
+  document.getElementById('ures').innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:1rem 0;font-size:13px;color:var(--mu)"><div class="sp"></div>Procesando examen...</div>`;
+  try{
+    // IA analiza pero solo guarda en revisión — no muestra resultado al paciente
+    const result=await analyzeExam(pr,CU.name);
+    const rev={id:'r'+Date.now(),pid:CU.id,date:new Date().toISOString().slice(0,10),
+      tsh:result.tsh,t4l:result.t4l,st:'pending',
+      reason:result.razonamiento,di:result.nueva_dosis,
+      semana_nueva:result.semana_nueva,ac:result.accion,
+      email:result.correo_cuerpo,asunto:result.correo_asunto,
+      ai_raw:result};
+    REV.unshift(rev);
+    document.getElementById('ures').innerHTML=`
+      <div class="inf" style="margin-top:1rem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2" style="flex-shrink:0;margin-top:1px"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><b>Examen enviado correctamente</b><br>La Dra. Espinoza revisará tu examen y recibirás las indicaciones en tu panel una vez que las apruebe. Esto puede tomar algunas horas.</div>
+      </div>
+      <div style="margin-top:1rem;display:flex;justify-content:flex-end"><button class="btn bp" onclick="nav('panel')">Ir a mi panel →</button></div>`;
+    btn.style.display='none';
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='Reintentar';
+    document.getElementById('ures').innerHTML=`<div class="war" style="margin-top:1rem">⚠ ${e.message}</div>`;
+  }
+}
+
+// ── IA EXPERTA EN TIROIDES ──
+async function analyzeExam(pr,name){
+  const semanaActual=pr.semana?['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map((d,i)=>`${d}: ${pr.semana[i]} mcg`).join(', '):`Uniforme: ${pr.dosis} mcg/día`;
+  const sint=(pr.sint||[]).join(', ')||'no reportados';
+
+  const prompt=`Eres un endocrinólogo experto de nivel consultor internacional, con conocimiento profundo de las guías clínicas de la American Thyroid Association (ATA 2014), European Thyroid Association (ETA), y la literatura endocrinológica actual sobre hipotiroidismo.
+
+TAREA: Analiza esta imagen de examen de laboratorio de tiroides (puede ser de laboratorios chilenos como UC Christus, Bupa, Integramédica, Clínica Las Condes, etc.) y:
+1. Extrae los valores de TSH y T4 libre con precisión
+2. Aplica criterio clínico experto considerando la historia del paciente
+3. Genera una recomendación de dosis semanal detallada
+4. Redacta el correo para la paciente
+
+Responde ÚNICAMENTE con este JSON válido sin markdown ni texto adicional:
+{
+  "tsh": 6.8,
+  "t4l": 0.9,
+  "razonamiento": "...",
+  "nueva_dosis": 112,
+  "semana_nueva": [100,100,100,100,100,112,112],
+  "accion": "subir",
+  "correo_asunto": "...",
+  "correo_cuerpo": "..."
+}
+
+DATOS DEL PACIENTE:
+- Nombre: ${name}
+- Diagnóstico: Hipotiroidismo (${pr.causa||'causa no especificada'})
+- Tiempo desde diagnóstico: ${pr.dx||'no especificado'}
+- Medicamento: ${pr.marca||'Eutirox'} (levotiroxina)
+- Dosis base actual: ${pr.dosis} mcg
+- Esquema semanal actual: ${semanaActual}
+- Forma de administración: ${pr.admin}
+- Peso: ${pr.peso||'?'} kg, Talla: ${pr.talla||'?'} cm${pr.peso&&pr.talla?', IMC: '+(pr.peso/((pr.talla/100)**2)).toFixed(1):''}
+- Bienestar referido: ${pr.bienest||'no especificado'}
+- Síntomas actuales: ${sint}
+- Notas adicionales: ${pr.notas||'ninguna'}
+
+CRITERIOS CLÍNICOS EXPERTOS (basados en guías ATA/ETA):
+
+RANGOS DE REFERENCIA:
+- TSH normal adultos: 0.5 – 4.5 mUI/L (algunos labs chilenos usan 0.27–4.2)
+- T4 libre normal: 0.8 – 1.8 ng/dL
+- T3 libre normal: 2.0 – 4.4 pg/mL
+- Anticuerpos anti-TPO: < 35 UI/mL
+
+TOMA DE DECISIONES:
+1. TSH > 4.5 mUI/L → Hipotiroidismo subóptimo → SUBIR dosis
+   - TSH 4.5–7: subir 12.5 mcg (preferiblemente en días específicos)
+   - TSH 7–10: subir 25 mcg o esquema diferenciado
+   - TSH > 10: subir 25–50 mcg, considerar síntomas
+   
+2. TSH 0.5–4.5 mUI/L → Eutiroideo → MANTENER dosis actual
+   - Si hay síntomas persistentes con TSH normal, considerar T4L y T3L
+   - Objetivo TSH en Hashimoto: 1.0–3.0 mUI/L (zona baja-normal)
+
+3. TSH < 0.5 mUI/L → Sobretratamiento → BAJAR dosis
+   - TSH 0.1–0.5: bajar 12.5 mcg
+   - TSH < 0.1: bajar 25 mcg, riesgo de fibrilación auricular y osteoporosis
+
+DOSIS DISPONIBLES EN CHILE: 25, 50, 75, 88, 100, 112, 125, 150, 175, 200 mcg
+PESO TEÓRICO: 1.6–1.8 mcg/kg/día en hipotiroidismo primario completo
+
+ESQUEMA SEMANAL:
+- Técnica establecida: dar dosis extra en días específicos (ej: doble dosis sábado y domingo) para ajustes finos sin cambiar presentación
+- Ejemplo: paciente en 100 mcg con TSH levemente alto → Lu-Vi 100 mcg, Sa-Do 112 mcg (equivale a ~103 mcg/día promedio)
+- semana_nueva debe ser array de 7 números [Lu,Ma,Mi,Ju,Vi,Sa,Do]
+
+CONSIDERACIONES ADICIONALES:
+- Absorción: levotiroxina se absorbe mejor en ayunas con agua, 30-60 min antes desayuno
+- Interacciones: calcio, hierro, omeprazol reducen absorción (separar 4h)
+- Embarazo: requiere aumento inmediato ~30% de dosis (derivar a presencial)
+- Adultos mayores: objetivo TSH ligeramente más alto (1.0–4.0)
+- Post-tiroidectomía total: dosis más altas, TSH objetivo 0.5–2.0
+
+FORMATO DEL CORREO:
+- Empezar EXACTAMENTE con: "Estimada ${name},"
+- Máximo 180 palabras, tono cálido y profesional
+- Incluir: valores del examen, interpretación simple, dosis nueva con esquema por días si aplica, cuándo repetir exámenes
+- Si cambio de dosis: "Repite en 6–8 semanas"
+- Si se mantiene: "Repite en 6 meses"  
+- Terminar EXACTAMENTE con: "Un saludo cordial,\\nDra. Carolina Espinoza\\nTu Tiroides Check"
+
+IMPORTANTE: 
+- Si no puedes leer claramente algún valor, usa tu mejor estimación basada en la imagen e indícalo en el razonamiento
+- El razonamiento debe ser clínico, detallado y útil para que la doctora pueda confirmar o corregir
+- accion debe ser exactamente "subir", "bajar" o "mantener"`;
+
+  const res=await fetch('/api/ai',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      _key:API_KEY,
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:1200,
+      messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:curMime,data:curB64}},
+        {type:'text',text:prompt}
+      ]}]
+    })
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`Error ${res.status}`)}
+  const d=await res.json();
+  if(d.error)throw new Error(d.error.message);
+  const txt=d.content.map(c=>c.text||'').join('').trim().replace(/^```json\s*/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+  return JSON.parse(txt);
+}
+
+// ── PERFIL PACIENTE ──
+function rPerfil(pc){
+  const pr=PROF[CU.id]||{};
+  const semana=pr.semana||Array(7).fill(pr.dosis||100);
+  const dias=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  pc.innerHTML=`<div class="pg" style="max-width:540px"><div class="st">Mi perfil</div><div class="sub">Tus datos médicos registrados.</div>
+  <div class="card" style="margin-bottom:1rem">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Datos personales</div>
+    <div class="dc"><div class="dcc"><div class="dcl">Nombre</div><div class="dcv">${CU.name}</div></div><div class="dcc"><div class="dcl">Peso / Talla</div><div class="dcv">${pr.peso||'—'} kg / ${pr.talla||'—'} cm</div></div></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Diagnóstico</div>
+    <div class="dc"><div class="dcc"><div class="dcl">Causa</div><div class="dcv" style="font-size:12px">${pr.causa||'—'}</div></div><div class="dcc"><div class="dcl">Desde hace</div><div class="dcv">${pr.dx||'—'}</div></div></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Esquema de dosis semanal</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:.875rem">
+      ${dias.map((d,i)=>{const dose=semana[i];const isBase=dose===semana[0];return`<div style="text-align:center"><div style="font-size:11px;color:var(--mu);margin-bottom:5px">${d.slice(0,2)}</div><div style="background:${isBase?'#f5f3ef':'var(--tl)'};border:1.5px solid ${isBase?'var(--bd)':'var(--tm)'};border-radius:8px;padding:10px 4px;font-size:14px;font-weight:500;color:${isBase?'var(--tx)':'var(--td)'}">${dose}</div><div style="font-size:10px;color:var(--mu);margin-top:3px">mcg</div></div>`}).join('')}
+    </div>
+    <div style="background:#f5f3ef;border-radius:8px;padding:9px 11px"><div style="font-size:11px;color:var(--mu);margin-bottom:3px">Administración</div><div style="font-size:13px">${pr.admin||'—'}</div></div>
+  </div>
+  <div class="card">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Síntomas registrados</div>
+    <div style="margin-bottom:.75rem;font-size:13px;color:var(--mu)">${pr.bienest||'—'}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">${(pr.sint||[]).map(s=>`<span style="background:#f0eeea;border-radius:20px;padding:3px 10px;font-size:12px">${s}</span>`).join('')}</div>
+    ${pr.notas?`<div style="margin-top:.75rem;font-size:13px;color:var(--mu);font-style:italic">"${pr.notas}"</div>`:''}
+  </div></div>`;
+}
+
+// ── DOCTOR ──
+function rDash(pc){
+  const allP=Object.values(USERS).filter(u=>u.role==='patient');
+  const pending=REV.filter(r=>r.st==='pending');
+  const sent=REV.filter(r=>r.st==='sent');
+  pc.innerHTML=`<div class="pg"><div class="st">Dashboard</div><div class="sub">Panel médico de Tu Tiroides Check.</div>
+  <div class="mg">
+    <div class="met"><div class="ml">Pacientes</div><div class="mv">${allP.length}</div></div>
+    <div class="met"><div class="ml">Pendientes aprobación</div><div class="mv" style="color:${pending.length?'#c0392b':'var(--t)'}">${pending.length}</div></div>
+    <div class="met"><div class="ml">Aprobadas</div><div class="mv">${sent.length}</div></div>
+  </div>
+  ${pending.length?`<div style="background:#fde8e4;border:1px solid #f5c5c0;border-radius:var(--r);padding:14px 16px;margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center">
+    <span style="font-size:13px;color:#a32d2d"><b>${pending.length} examen${pending.length>1?'es':''}</b> esperando tu aprobación</span>
+    <button class="btn" style="background:#c0392b;color:white;font-size:13px;padding:7px 14px" onclick="nav('revs')">Revisar ahora →</button>
+  </div>`:''}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+    <div class="card">
+      <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Actividad reciente</div>
+      ${REV.slice(0,5).map(r=>{const p=Object.values(USERS).find(u=>u.id===r.pid);const cl=r.tsh>4.5?'thi':r.tsh<0.5?'tlo':'tok';return`<div class="pr" onclick="oRev('${r.id}')"><div class="pav">${(p?.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${p?.name||'Paciente'}</div><div style="font-size:12px;color:var(--mu)">${r.date} · <span class="${r.st==='sent'?'bgt':'bga'}">${r.st==='sent'?'Aprobado':'Pendiente'}</span></div></div><span class="${cl}">TSH ${r.tsh}</span></div>`}).join('')}
+    </div>
+    <div class="card">
+      <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem">Alertas clínicas</div>
+      <div class="tli"><div class="tld da"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ba7517" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></div><div><div class="tt">María González</div><div class="tm">TSH 6.8 — cambio de dosis hace 6 semanas. Debe repetir exámenes.</div></div></div>
+      <div class="tli"><div class="tld da"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ba7517" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div><div><div class="tt">2 pacientes</div><div class="tm">Vencen seguimiento anual este mes.</div></div></div>
+    </div>
+  </div></div>`;
+}
+
+function rPats(pc){
+  const allP=Object.values(USERS).filter(u=>u.role==='patient');
+  pc.innerHTML=`<div class="pg"><div class="st">Pacientes</div><div class="sub">${allP.length} paciente${allP.length!==1?'s':''} en el programa.</div>
+  <div class="card">${allP.map(p=>{const pr=PROF[p.id]||{};const rs=REV.filter(r=>r.pid===p.id);const l=rs.find(r=>r.st==='sent');const cl=l?(l.tsh>4.5?'thi':l.tsh<0.5?'tlo':'tok'):'';
+    return`<div class="pr" onclick="oPat('${p.id}')"><div class="pav">${(p.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div style="flex:1"><div style="font-size:14px;font-weight:500">${p.name}</div><div style="font-size:12px;color:var(--mu)">${pr.causa||'Hipotiroidismo'} · ${pr.dosis||'?'} mcg base · ${rs.length} control${rs.length!==1?'es':''}</div></div>${l?`<span class="${cl}">TSH ${l.tsh}</span>`:'<span style="font-size:12px;color:var(--mu)">Sin exámenes</span>'}</div>`;
+  }).join('')}</div></div>`;
+}
+
+function rRevs(pc){
+  const pending=REV.filter(r=>r.st==='pending');
+  const sent=REV.filter(r=>r.st==='sent');
+  pc.innerHTML=`<div class="pg"><div class="st">Revisiones</div>
+  ${pending.length?`<div style="margin-bottom:1.25rem"><div style="font-size:13px;font-weight:500;color:#a32d2d;margin-bottom:.75rem">⚠ Pendientes de aprobación (${pending.length})</div>
+  <div class="card" style="border-color:#f5c5c0">${pending.map(r=>{const p=Object.values(USERS).find(u=>u.id===r.pid);const cl=r.tsh>4.5?'thi':r.tsh<0.5?'tlo':'tok';return`<div class="pr" onclick="oRev('${r.id}')"><div class="pav" style="background:#fde8e4;color:#a32d2d">${(p?.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div style="flex:1"><div style="font-size:13px;font-weight:500">${p?.name||'Paciente'} <span class="bga" style="margin-left:5px;font-size:10px">Pendiente</span></div><div style="font-size:12px;color:var(--mu)">${r.date} · TSH ${r.tsh} · IA recomienda: ${r.di||'?'} mcg</div></div><span class="${cl}">TSH ${r.tsh}</span></div>`}).join('')}</div></div>`:''}
+  <div style="font-size:13px;font-weight:500;color:var(--mu);margin-bottom:.75rem">Aprobadas (${sent.length})</div>
+  <div class="card">${sent.map(r=>{const p=Object.values(USERS).find(u=>u.id===r.pid);const cl=r.tsh>4.5?'thi':r.tsh<0.5?'tlo':'tok';return`<div class="pr" onclick="oRev('${r.id}')"><div class="pav">${(p?.name||'?').split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div style="flex:1"><div style="font-size:14px;font-weight:500">${p?.name||'Paciente'} <span class="bgt" style="margin-left:5px;font-size:10px">Aprobado</span></div><div style="font-size:12px;color:var(--mu)">${r.date} · TSH ${r.tsh} · Dosis: ${r.di||'?'} mcg</div></div><span class="${cl}">TSH ${r.tsh}</span></div>`}).join('')||'<p style="font-size:13px;color:var(--mu)">Sin revisiones aprobadas aún.</p>'}</div>
+  </div>`;
+}
+
+function oPat(pid){
+  const p=Object.values(USERS).find(u=>u.id===pid);const pr=PROF[pid]||{};const rs=REV.filter(r=>r.pid===pid);
+  const semana=pr.semana||Array(7).fill(pr.dosis||100);
+  document.getElementById('mtitle').textContent=p?.name||'Paciente';
+  document.getElementById('mbody').innerHTML=`
+    <div class="dc"><div class="dcc"><div class="dcl">Causa</div><div class="dcv" style="font-size:12px">${pr.causa||'—'}</div></div><div class="dcc"><div class="dcl">Dosis base</div><div class="dcv">${pr.dosis||'—'} mcg</div></div><div class="dcc"><div class="dcl">Peso/Talla</div><div class="dcv">${pr.peso||'—'} kg / ${pr.talla||'—'} cm</div></div><div class="dcc"><div class="dcl">Desde hace</div><div class="dcv">${pr.dx||'—'}</div></div></div>
+    <div style="margin-bottom:.875rem"><div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Esquema semanal</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((d,i)=>`<div style="text-align:center"><div style="font-size:10px;color:var(--mu);margin-bottom:3px">${d}</div><div style="background:#f5f3ef;border-radius:6px;padding:6px 2px;font-size:12px;font-weight:500">${semana[i]}</div></div>`).join('')}</div></div>
+    ${pr.sint?.length?`<div style="margin-bottom:.875rem"><div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Síntomas</div><div style="display:flex;flex-wrap:wrap;gap:5px">${pr.sint.map(s=>`<span style="background:#f0eeea;border-radius:20px;padding:2px 9px;font-size:12px">${s}</span>`).join('')}</div></div>`:''}
+    <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:.5rem">Historial</div>
+    ${rs.map(r=>`<div class="tli"><div class="tld ${r.st==='sent'?'dg':'da'}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${r.st==='sent'?'var(--t)':'#ba7517'}" stroke-width="2.5">${r.st==='sent'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/>'}</svg></div><div><div class="tt">${r.date} · TSH ${r.tsh}</div><div class="tm">Indicación: ${r.di||'?'} mcg · ${r.st==='sent'?'Aprobado':'Pendiente'}</div></div></div>`).join('')||'<p style="font-size:13px;color:var(--mu)">Sin controles.</p>'}`;
+  document.getElementById('mfoot').innerHTML=`<button class="btn bs" onclick="cm()">Cerrar</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function oRev(rid){
+  const r=REV.find(x=>x.id===rid);
+  const p=Object.values(USERS).find(u=>u.id===r.pid);
+  const pr=PROF[r.pid]||{};
+  document.getElementById('mtitle').textContent=(p?.name||'Paciente')+' — '+r.date;
+  const col=r.tsh>4.5?'#c0392b':r.tsh<0.5?'#ba7517':'var(--t)';
+  const semNueva=r.semana_nueva||Array(7).fill(r.di||pr.dosis||100);
+  const semActual=pr.semana||Array(7).fill(pr.dosis||100);
+  const dias=['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
+
+  document.getElementById('mbody').innerHTML=`
+    <div class="dc">
+      <div class="dcc"><div class="dcl">TSH</div><div class="dcv" style="color:${col}">${r.tsh} mUI/L ${r.tsh>4.5?'↑ Alto':r.tsh<0.5?'↓ Bajo':'✓ Normal'}</div></div>
+      <div class="dcc"><div class="dcl">T4 libre</div><div class="dcv">${r.t4l||'—'} ng/dL</div></div>
+      <div class="dcc"><div class="dcl">Dosis anterior</div><div class="dcv">${pr.dosis||'?'} mcg</div></div>
+      <div class="dcc"><div class="dcl">IA recomienda</div><div class="dcv" style="color:${col}">${r.di||'?'} mcg (${r.ac||'—'})</div></div>
+    </div>
+
+    ${r.reason?`<div class="aib" style="margin-bottom:1rem"><div class="aih"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3c3489" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Razonamiento clínico de la IA</div><div class="aibo"><div class="air">${r.reason}</div></div></div>`:''}
+
+    <div style="margin-bottom:1rem">
+      <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:4px">Esquema semanal — edita directamente cada día:</div>
+      <div style="font-size:11px;color:var(--mu);margin-bottom:8px">Los días que cambian respecto al esquema anterior se muestran en verde.</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px">
+        ${dias.map((d,i)=>{const dn=semNueva[i];const da=semActual[i];const changed=dn!==da;return`<div style="text-align:center"><div style="font-size:10px;color:var(--mu);margin-bottom:4px;font-weight:500">${d}</div><input type="number" id="sem-edit-${i}" value="${dn}" style="text-align:center;padding:7px 2px;font-size:13px;font-weight:500;background:${changed?'var(--tl)':'white'};border-color:${changed?'var(--tm)':'var(--bd)'};color:${changed?'var(--td)':'var(--tx)'}" oninput="updateSemColor(this,${da})">${changed?`<div style="font-size:9px;color:var(--mu);margin-top:3px">antes: ${da}</div>`:''}</div>`}).join('')}
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:8px">Correo para la paciente — editable:</div>
+    <div class="ep"><div class="eh" contenteditable="true" id="asunto-edit" style="outline:none;font-weight:500;color:var(--tx)" spellcheck="false">Asunto: ${r.asunto||'Tu control de tiroides — Tu Tiroides Check'}</div><div class="eb" contenteditable="true" id="email-edit" spellcheck="false">${r.email||''}</div></div>
+    <div style="font-size:11px;color:var(--mu);margin-top:5px">✏️ Haz clic en el asunto o el cuerpo del correo para editar.</div>
+    ${r.st==='sent'?`<div class="inf" style="margin-top:.875rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span>Ya aprobado y enviado a la paciente.</span></div>`:''}`;
+
+  if(r.st==='pending'){
+    document.getElementById('mfoot').innerHTML=`
+      <button class="btn bs" onclick="cm()">Cancelar</button>
+      <button class="btn bd" onclick="rechazarRev('${r.id}')">Derivar a presencial</button>
+      <button class="btn bp" onclick="aprobarRev('${r.id}')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Aprobar y enviar
+      </button>`;
+  } else {
+    document.getElementById('mfoot').innerHTML=`<button class="btn bs" onclick="cm()">Cerrar</button>`;
+  }
+  document.getElementById('modal').classList.add('open');
+}
+
+function updateSemColor(el,original){const val=parseInt(el.value)||0;const changed=val!==original;el.style.background=changed?'var(--tl)':'white';el.style.borderColor=changed?'var(--tm)':'var(--bd)';el.style.color=changed?'var(--td)':'var(--tx)'}
+
+function aprobarRev(rid){
+  const r=REV.find(x=>x.id===rid);if(!r)return;
+  const emailEdit=document.getElementById('email-edit');
+  if(emailEdit)r.email=emailEdit.innerText;
+  // Leer esquema semanal editado por la dra
+  const semEditada=[];
+  for(let i=0;i<7;i++){const el=document.getElementById('sem-edit-'+i);semEditada.push(el?parseInt(el.value)||r.semana_nueva[i]:r.semana_nueva[i])}
+  r.semana_nueva=semEditada;
+  // Dosis base = mínimo del esquema semanal editado
+  r.di=Math.min(...semEditada);
+  r.st='sent';
+  if(PROF[r.pid]){
+    PROF[r.pid].dosis=r.di;
+    PROF[r.pid].semana=semEditada;
+  }
+  cm();
+  // Notificación visual
+  const banner=document.createElement('div');
+  banner.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--t);color:white;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,.2)';
+  banner.textContent='✓ Aprobado — indicaciones enviadas a la paciente';
+  document.body.appendChild(banner);
+  setTimeout(()=>banner.remove(),3500);
+  nav(CP);
+}
+
+function rechazarRev(rid){
+  const r=REV.find(x=>x.id===rid);if(!r)return;
+  r.st='presencial';
+  cm();nav(CP);
+}
+
+function cm(){document.getElementById('modal').classList.remove('open')}
+</script>
+</body>
+</html>
