@@ -101,19 +101,7 @@ label{font-size:13px;font-weight:500}
 <body>
 
 <!-- KEY SCREEN -->
-<div id="key-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem">
-<div class="card" style="max-width:420px;width:100%">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem">
-    <div style="width:40px;height:40px;background:var(--td);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C8 2 5 5 5 9c0 2.5 1.2 4.7 3 6.1V20h8v-4.9c1.8-1.4 3-3.6 3-6.1 0-4-3-7-7-7z" fill="white" opacity=".9"/><circle cx="12" cy="9" r="2.5" fill="rgba(255,255,255,.4)"/></svg>
-    </div>
-    <div><div style="font-size:17px;font-weight:500;color:var(--td)">Tu Tiroides Check</div><div style="font-size:12px;color:var(--mu)">Configuración inicial</div></div>
-  </div>
-  <div class="war" style="margin-bottom:1.25rem">Solo para uso interno de prueba. La API key se guarda en tu navegador.</div>
-  <div class="f"><label>Anthropic API Key</label><input type="password" id="key-input" placeholder="sk-ant-api03-..."><div style="font-size:12px;color:var(--mu)">Obtén tu key en <b>console.anthropic.com</b> → API Keys</div></div>
-  <div id="key-err" class="h" style="font-size:12px;color:#c0392b;margin-bottom:.75rem"></div>
-  <button class="btn bp bw" onclick="saveKey()">Guardar y continuar</button>
-</div>
+<div id="key-screen" style="display:none">
 </div>
 
 <!-- AUTH -->
@@ -198,15 +186,15 @@ label{font-size:13px;font-weight:500}
 </div>
 
 <script>
-let API_KEY = localStorage.getItem('ttc_key') || '';
+let API_KEY = '';
 const USERS = {
   'maria@demo.cl':{id:'p1',pass:'demo123',role:'patient',name:'María González'},
   'dra@tiroides.cl':{id:'d1',pass:'demo123',role:'doctor',name:'Dra. Carolina Espinoza'}
 };
 const PROF = {
   p1:{dx:'Más de 10 años',causa:'Tiroiditis de Hashimoto',dosis:100,marca:'Eutirox',
-      admin:'En ayunas, 30–60 min antes del desayuno',peso:68,talla:162,
-      bienest:'Algunos síntomas leves',sint:['Cansancio','Frío frecuente'],notas:'',
+      admin:'En ayunas, 30 min antes del desayuno',peso:68,talla:162,
+      bienest:'Algunos síntomas leves',sint:['Cansancio','Frío frecuente'],notas:'',sexo:'femenino',
       semana:[100,100,100,100,100,112,112],onboarded:true}
 };
 const REV = [
@@ -223,9 +211,9 @@ let CU=null, CP=null, curB64=null, curMime=null;
 let OS=1, OD={};
 
 // KEY
-function saveKey(){const k=document.getElementById('key-input').value.trim();if(!k.startsWith('sk-ant-')){const e=document.getElementById('key-err');e.textContent='La key debe empezar con sk-ant-';e.classList.remove('h');return}API_KEY=k;localStorage.setItem('ttc_key',k);document.getElementById('key-screen').style.display='none';document.getElementById('auth-screen').classList.remove('h')}
+function saveKey(){document.getElementById('key-screen').style.display='none';document.getElementById('auth-screen').classList.remove('h')}
 function resetKey(){localStorage.removeItem('ttc_key');API_KEY='';document.getElementById('auth-screen').classList.add('h');document.getElementById('key-screen').style.display='flex'}
-window.addEventListener('load',()=>{if(API_KEY){document.getElementById('key-screen').style.display='none';document.getElementById('auth-screen').classList.remove('h')}});
+window.addEventListener('load',()=>{document.getElementById('key-screen').style.display='none';document.getElementById('auth-screen').classList.remove('h')});
 
 // AUTH
 function stab(t){const a=t==='li';document.getElementById('tab-li').style.cssText=`flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:${a?'var(--t)':'var(--mu)'};border-bottom:2px solid ${a?'var(--t)':'transparent'}`;document.getElementById('tab-rg').style.cssText=`flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:${!a?'var(--t)':'var(--mu)'};border-bottom:2px solid ${!a?'var(--t)':'transparent'}`;document.getElementById('li-f').classList.toggle('h',!a);document.getElementById('rg-f').classList.toggle('h',a)}
@@ -249,20 +237,49 @@ function renderOS(){
       <select id="od-dx"><option value="">Seleccionar...</option><option>Hace menos de 1 año</option><option>1 – 3 años</option><option>3 – 5 años</option><option>5 – 10 años</option><option>Más de 10 años</option></select></div>
     <div class="f"><label>Causa conocida</label>
       <div id="od-causa">${['Tiroiditis de Hashimoto','Post-cirugía tiroidea','Post-radioyodo','Hipotiroidismo congénito','Sin causa identificada / No sé'].map(c=>`<div class="ro" onclick="selR(this,'od-causa')" data-v="${c}"><span class="rd"></span>${c}</div>`).join('')}</div></div>
+    <div class="f" style="margin-top:.5rem"><label>Sexo</label>
+      <div style="display:flex;gap:8px">
+        <div class="ro" id="od-sexo-f" onclick="document.getElementById('od-sexo-f').classList.add('sel');document.getElementById('od-sexo-m').classList.remove('sel')" style="flex:1"><span class="rd"></span>Femenino</div>
+        <div class="ro" id="od-sexo-m" onclick="document.getElementById('od-sexo-m').classList.add('sel');document.getElementById('od-sexo-f').classList.remove('sel')" style="flex:1"><span class="rd"></span>Masculino</div>
+      </div></div>
     <div class="war">Este programa es exclusivo para hipotiroidismo tratado con levotiroxina. Embarazo, nódulos, hipertiroidismo o cáncer de tiroides requieren consulta presencial.</div>
     <div style="display:flex;justify-content:flex-end;margin-top:1.25rem"><button class="btn bp" onclick="obNext(1)">Continuar →</button></div>`;
 
   else if(OS===2) b.innerHTML=`
     <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Tratamiento</div>
-    <div class="two"><div class="f"><label>Marca del medicamento</label><select id="od-marca"><option value="">Seleccionar...</option><option>Eutirox</option><option>Levotiroxina Sandoz</option><option>Levotiroxina Chile</option><option>Sintrocid</option><option>Otra</option></select></div><div class="f"><label>Dosis base (mcg)</label><input type="number" id="od-dosis" placeholder="100" value="${OD.dosis||''}" oninput="syncDosis(this.value)"></div></div>
-    <div class="f"><label>Dosis por día de la semana</label>
-      <div style="font-size:12px;color:var(--mu);margin-bottom:8px">Si tomas la misma dosis todos los días, déjala igual. Si varía, cambia cada día.</div>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
-        ${['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((d,i)=>`<div style="text-align:center"><div style="font-size:11px;font-weight:500;color:var(--mu);margin-bottom:4px">${d}</div><input type="number" id="od-d${i}" placeholder="100" style="text-align:center;padding:8px 4px;font-size:13px" value="${OD.semana?OD.semana[i]:OD.dosis||''}"></div>`).join('')}
-      </div></div>
-    <div class="two" style="margin-top:.5rem"><div class="f"><label>Peso (kg)</label><input type="number" id="od-peso" placeholder="65" value="${OD.peso||''}"></div><div class="f"><label>Talla (cm)</label><input type="number" id="od-talla" placeholder="165" value="${OD.talla||''}"></div></div>
+    <div class="f"><label>Marca del medicamento</label><select id="od-marca"><option value="">Seleccionar...</option><option>Eutirox</option><option>Synthroid</option><option>T4 Bago</option><option>T4 Alembic</option><option>Otra</option></select></div>
+    <div class="f"><label>¿Tu dosis es fija o varía según el día?</label>
+      <div class="ro sel" id="btn-fija" onclick="document.getElementById('btn-fija').classList.add('sel');document.getElementById('btn-var').classList.remove('sel');document.getElementById('sec-fija').style.display='block';document.getElementById('sec-var').style.display='none'" style="margin-bottom:6px"><span class="rd"></span>Fija — tomo la misma dosis todos los días</div>
+      <div class="ro" id="btn-var" onclick="document.getElementById('btn-var').classList.add('sel');document.getElementById('btn-fija').classList.remove('sel');document.getElementById('sec-var').style.display='block';document.getElementById('sec-fija').style.display='none'"><span class="rd"></span>Variable — tomo dosis distintas según el día</div>
+    </div>
+    <div id="sec-fija" style="display:block">
+      <div class="f"><label>Dosis diaria (mcg)</label><input type="number" id="od-dosis-unica" placeholder="Ej: 100" min="0" value="${OD.dosis||''}"></div>
+    </div>
+    <div id="sec-var" style="display:none">
+      <div class="f"><label>Dosis por día (mcg)</label>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px">
+          ${['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((d,i)=>`<div style='text-align:center'><div style='font-size:11px;color:#8a857f;margin-bottom:4px'>${d}</div><input type=number id=od-d${i} placeholder=100 style='text-align:center;padding:7px 2px;font-size:13px;width:100%;border:1.5px solid #ddd;border-radius:8px' value='${OD.semana?OD.semana[i]:""}'></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="two" style="margin-top:.5rem">
+      <div class="f"><label>Peso (kg)</label><input type="number" id="od-peso" placeholder="65" value="${OD.peso||''}"></div>
+      <div class="f"><label>Talla (cm)</label><input type="number" id="od-talla" placeholder="165" value="${OD.talla||''}"></div>
+    </div>
     <div class="f"><label>¿Cómo tomas la levotiroxina?</label>
-      <div id="od-admin">${['En ayunas, 30–60 min antes del desayuno','En ayunas, menos de 30 min','Con o después del desayuno','No siempre / olvido dosis'].map(a=>`<div class="ro" onclick="selR(this,'od-admin')" data-v="${a}"><span class="rd"></span>${a}</div>`).join('')}</div></div>
+      <div id="od-admin">${['En ayunas, 30 min antes del desayuno','Con o después del desayuno','La mezclo con otros fármacos','No siempre / olvido dosis'].map(a=>`<div class="ro" onclick="selR(this,'od-admin')" data-v="${a}"><span class="rd"></span>${a}</div>`).join('')}</div></div>
+    <div class="f"><label>¿Tomas otros medicamentos regularmente?</label>
+      <div class="ro" id="od-otros-si" onclick="document.getElementById('od-otros-si').classList.add('sel');document.getElementById('od-otros-no').classList.remove('sel');document.getElementById('od-otros-z').style.display='block'" style="margin-bottom:6px"><span class="rd"></span>Sí</div>
+      <div class="ro" id="od-otros-no" onclick="document.getElementById('od-otros-no').classList.add('sel');document.getElementById('od-otros-si').classList.remove('sel');document.getElementById('od-otros-z').style.display='none'"><span class="rd"></span>No</div>
+    </div>
+    <div id="od-otros-z" style="display:none">
+      <div class="f"><label>¿Cuáles? <span style="font-weight:300;color:var(--mu)">(nombre y para qué sirven)</span></label>
+        <textarea id="od-otros-txt" placeholder="Ej: Omeprazol (gastritis), Calcio (osteoporosis)..."></textarea>
+      </div>
+      <div style="background:#fef9ec;border:1px solid #f0d070;border-radius:var(--r);padding:12px 14px;font-size:13px;color:#7a5c00;line-height:1.6;margin-bottom:.875rem">
+        ⚠️ <b>Importante:</b> Calcio, hierro, omeprazol y antiácidos reducen la absorción de la levotiroxina. Deben tomarse con al menos <b>4 horas de diferencia</b>. Tu doctora lo considerará.
+      </div>
+    </div>
     <div style="display:flex;justify-content:space-between;margin-top:1.25rem"><button class="btn bs" onclick="OS=1;renderOS()">← Volver</button><button class="btn bp" onclick="obNext(2)">Continuar →</button></div>`;
 
   else if(OS===3) b.innerHTML=`
@@ -272,6 +289,13 @@ function renderOS(){
     <div class="f"><label>Marca todos los síntomas que tienes ahora</label>
       <div class="sgrid" id="od-sint">${['Cansancio o fatiga','Aumento de peso','Intolerancia al frío','Piel seca o descamada','Caída de cabello','Estreñimiento','Depresión o ánimo bajo','Problemas de memoria o concentración','Calambres musculares','Voz ronca','Hinchazón (cara, manos, piernas)','Bradicardia (corazón lento)','Ninguno'].map(s=>`<div class="co" onclick="togC(this,'od-sint')" data-v="${s}"><span class="cb"></span>${s}</div>`).join('')}</div></div>
     <div class="f"><label>¿Algo más que quieras contarle a la Dra.? (opcional)</label><textarea id="od-notas" placeholder="Otras enfermedades, medicamentos que tomas, cambios recientes..."></textarea></div>
+    <div style="margin-top:1rem;border:1.5px solid var(--bd);border-radius:var(--r);padding:14px 16px;background:#fef9ec">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#7a5c00;font-weight:normal;line-height:1.6">
+        <input type="checkbox" id="od-disclaimer" style="width:18px;height:18px;min-width:18px;margin-top:2px;accent-color:var(--t)">
+        <span>Entiendo y acepto que <b>Tu Tiroides Check no es una consulta médica</b>. Es un servicio de seguimiento que apoya a mi endocrinóloga en el control de mi tratamiento. Ante cualquier urgencia o síntoma grave, debo consultar presencialmente.</span>
+      </label>
+    </div>
+
     <div style="display:flex;justify-content:space-between;margin-top:1.25rem"><button class="btn bs" onclick="OS=2;renderOS()">← Volver</button><button class="btn bp" onclick="obNext(3)">Guardar ficha →</button></div>`;
 
   else if(OS===4) b.innerHTML=`
@@ -290,9 +314,32 @@ function selR(el,gid){document.querySelectorAll('#'+gid+' .ro').forEach(o=>o.cla
 function togC(el,gid){if(el.dataset.v==='Ninguno'){document.querySelectorAll('#'+gid+' .co').forEach(o=>o!==el&&o.classList.remove('sel'))}else{document.querySelectorAll('#'+gid+' .co[data-v="Ninguno"]').forEach(o=>o.classList.remove('sel'))}el.classList.toggle('sel')}
 
 function obNext(s){
-  if(s===1){const dx=document.getElementById('od-dx').value;const c=document.querySelector('#od-causa .ro.sel');if(!dx)return alert('Selecciona cuánto tiempo llevas con el diagnóstico.');OD.dx=dx;OD.causa=c?c.dataset.v:'Sin causa identificada';OS=2;}
-  else if(s===2){const d=document.getElementById('od-dosis').value;const m=document.getElementById('od-marca').value;const pe=document.getElementById('od-peso').value;const ta=document.getElementById('od-talla').value;const ad=document.querySelector('#od-admin .ro.sel');if(!d||!m)return alert('Completa dosis y marca.');if(!pe||!ta)return alert('Completa peso y talla.');OD.dosis=parseInt(d);OD.marca=m;OD.peso=parseInt(pe);OD.talla=parseInt(ta);OD.admin=ad?ad.dataset.v:'No especificada';OD.semana=['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((_,i)=>parseInt(document.getElementById('od-d'+i).value)||parseInt(d));OS=3;}
-  else if(s===3){const bi=document.querySelector('#od-bien .ro.sel');if(!bi)return alert('Indica cómo te sientes hoy.');OD.bienest=bi.dataset.v;OD.sint=[...document.querySelectorAll('#od-sint .co.sel')].map(e=>e.dataset.v);if(!OD.sint.length)OD.sint=['Ninguno'];OD.notas=document.getElementById('od-notas').value;PROF[CU.id]={...OD,onboarded:true};OS=4;}
+  if(s===1){const dx=document.getElementById('od-dx').value;const c=document.querySelector('#od-causa .ro.sel');if(!dx)return alert('Selecciona cuánto tiempo llevas con el diagnóstico.');OD.dx=dx;OD.causa=c?c.dataset.v:'Sin causa identificada';const sexoF=document.getElementById('od-sexo-f');OD.sexo=sexoF&&sexoF.classList.contains('sel')?'femenino':'masculino';OS=2;}
+  else if(s===2){
+    const m=document.getElementById('od-marca').value;
+    if(!m)return alert('Selecciona la marca del medicamento.');
+    const peEl=document.getElementById('od-peso');
+    const taEl=document.getElementById('od-talla');
+    if(!peEl||!peEl.value||!taEl||!taEl.value)return alert('Completa peso y talla.');
+    const ad=document.querySelector('#od-admin .ro.sel');
+    const esVar=document.getElementById('sec-var')&&document.getElementById('sec-var').style.display==='block';
+    let d, semana;
+    if(esVar){
+      const vals=[0,1,2,3,4,5,6].map(i=>parseInt(document.getElementById('od-d'+i)?.value)||0);
+      if(vals.every(v=>v===0))return alert('Ingresa las dosis para cada día.');
+      d=Math.max(...vals); semana=vals;
+    } else {
+      const u=document.getElementById('od-dosis-unica')?.value;
+      if(!u||parseInt(u)===0)return alert('Ingresa tu dosis diaria.');
+      d=parseInt(u); semana=Array(7).fill(d);
+    }
+    OD.dosis=d; OD.semana=semana; OD.marca=m;
+    OD.peso=parseInt(peEl.value); OD.talla=parseInt(taEl.value);
+    OD.admin=ad?ad.dataset.v:'No especificada';
+    const oSi=document.getElementById('od-otros-si');
+    OD.otros_medicamentos=oSi&&oSi.classList.contains('sel')?(document.getElementById('od-otros-txt')?.value||'Sí, no especificó'):'Ninguno';
+    OS=3;}
+  else if(s===3){const bi=document.querySelector('#od-bien .ro.sel');if(!bi)return alert('Indica cómo te sientes hoy.');const disc=document.getElementById('od-disclaimer');if(!disc||!disc.checked)return alert('Debes aceptar las condiciones para continuar.');OD.bienest=bi.dataset.v;OD.sint=[...document.querySelectorAll('#od-sint .co.sel')].map(e=>e.dataset.v);if(!OD.sint.length)OD.sint=['Ninguno'];OD.notas=document.getElementById('od-notas').value;PROF[CU.id]={...OD,onboarded:true};OS=4;}
   renderOS();
 }
 function finishOnboard(){document.getElementById('onboard-screen').classList.add('h');startApp()}
@@ -459,6 +506,10 @@ async function subUp(){
 
 // ── IA EXPERTA EN TIROIDES ──
 async function analyzeExam(pr,name){
+  // Build medication warning dynamically
+  const medWarning = (pr.otros_medicamentos && pr.otros_medicamentos !== 'Ninguno')
+    ? `ATENCIÓN MEDICAMENTOS: Esta paciente/este paciente toma: ${pr.otros_medicamentos||''}. Es OBLIGATORIO incluir en el correo esta frase exacta: "Recuerda tomar tu levotiroxina con al menos 4 horas de separación de ${pr.otros_medicamentos||''}, ya que puede reducir su absorción." No omitas esta indicación bajo ninguna circunstancia.`
+    : '';
   const semanaActual=pr.semana?['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map((d,i)=>`${d}: ${pr.semana[i]} mcg`).join(', '):`Uniforme: ${pr.dosis} mcg/día`;
   const sint=(pr.sint||[]).join(', ')||'no reportados';
 
@@ -533,12 +584,17 @@ CONSIDERACIONES ADICIONALES:
 - Post-tiroidectomía total: dosis más altas, TSH objetivo 0.5–2.0
 
 FORMATO DEL CORREO:
-- Empezar EXACTAMENTE con: "Estimada ${name},"
-- Máximo 180 palabras, tono cálido y profesional
+- Empezar EXACTAMENTE con: "${pr.sexo==='masculino'?'Estimado':'Estimada'} ${name},"
+- Máximo 180 palabras, tono cálido y profesional, SIEMPRE en español chileno correcto
+- NO usar anglicismos ni palabras en inglés (no "new", no "check", no "ok")
+- NO usar mayúsculas para títulos dentro del correo
 - Incluir: valores del examen, interpretación simple, dosis nueva con esquema por días si aplica, cuándo repetir exámenes
 - Si cambio de dosis: "Repite en 6–8 semanas"
-- Si se mantiene: "Repite en 6 meses"  
+- Si se mantiene: "Repite en 6 meses"
+- Usar "cualquier" no "qualquier", "nueva" no "new", español correcto siempre
+${medWarning}
 - Terminar EXACTAMENTE con: "Un saludo cordial,\\nDra. Carolina Espinoza\\nTu Tiroides Check"
+- El correo debe ser en español chileno, cálido pero profesional, máximo 200 palabras
 
 IMPORTANTE: 
 - Si no puedes leer claramente algún valor, usa tu mejor estimación basada en la imagen e indícalo en el razonamiento
@@ -648,6 +704,7 @@ function oPat(pid){
   document.getElementById('mbody').innerHTML=`
     <div class="dc"><div class="dcc"><div class="dcl">Causa</div><div class="dcv" style="font-size:12px">${pr.causa||'—'}</div></div><div class="dcc"><div class="dcl">Dosis base</div><div class="dcv">${pr.dosis||'—'} mcg</div></div><div class="dcc"><div class="dcl">Peso/Talla</div><div class="dcv">${pr.peso||'—'} kg / ${pr.talla||'—'} cm</div></div><div class="dcc"><div class="dcl">Desde hace</div><div class="dcv">${pr.dx||'—'}</div></div></div>
     <div style="margin-bottom:.875rem"><div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Esquema semanal</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${['Lu','Ma','Mi','Ju','Vi','Sa','Do'].map((d,i)=>`<div style="text-align:center"><div style="font-size:10px;color:var(--mu);margin-bottom:3px">${d}</div><div style="background:#f5f3ef;border-radius:6px;padding:6px 2px;font-size:12px;font-weight:500">${semana[i]}</div></div>`).join('')}</div></div>
+    ${pr.otros_medicamentos&&pr.otros_medicamentos!=='Ninguno'?`<div style="margin-bottom:.875rem;background:#fef9ec;border:1px solid #f0d070;border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:#7a5c00;margin-bottom:3px;font-weight:500">⚠ Otros medicamentos</div><div style="font-size:13px;color:#7a5c00">${pr.otros_medicamentos}</div></div>`:''}
     ${pr.sint?.length?`<div style="margin-bottom:.875rem"><div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Síntomas</div><div style="display:flex;flex-wrap:wrap;gap:5px">${pr.sint.map(s=>`<span style="background:#f0eeea;border-radius:20px;padding:2px 9px;font-size:12px">${s}</span>`).join('')}</div></div>`:''}
     <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:.5rem">Historial</div>
     ${rs.map(r=>`<div class="tli"><div class="tld ${r.st==='sent'?'dg':'da'}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${r.st==='sent'?'var(--t)':'#ba7517'}" stroke-width="2.5">${r.st==='sent'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/>'}</svg></div><div><div class="tt">${r.date} · TSH ${r.tsh}</div><div class="tm">Indicación: ${r.di||'?'} mcg · ${r.st==='sent'?'Aprobado':'Pendiente'}</div></div></div>`).join('')||'<p style="font-size:13px;color:var(--mu)">Sin controles.</p>'}`;
@@ -673,6 +730,7 @@ function oRev(rid){
       <div class="dcc"><div class="dcl">IA recomienda</div><div class="dcv" style="color:${col}">${r.di||'?'} mcg (${r.ac||'—'})</div></div>
     </div>
 
+    ${pr.otros_medicamentos&&pr.otros_medicamentos!=='Ninguno'?`<div style="background:#fef9ec;border:1.5px solid #f0d070;border-radius:var(--r);padding:13px 15px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ba7517" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div><div style="font-size:13px;font-weight:500;color:#7a5c00;margin-bottom:3px">⚠ Paciente toma otros medicamentos</div><div style="font-size:13px;color:#7a5c00">${pr.otros_medicamentos}</div><div style="font-size:12px;color:#ba7517;margin-top:4px">Recordar: calcio, hierro, omeprazol y antiácidos deben tomarse con al menos <b>4 horas de diferencia</b> de la levotiroxina.</div></div></div>`:''}
     ${r.reason?`<div class="aib" style="margin-bottom:1rem"><div class="aih"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3c3489" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Razonamiento clínico de la IA</div><div class="aibo"><div class="air">${r.reason}</div></div></div>`:''}
 
     <div style="margin-bottom:1rem">
