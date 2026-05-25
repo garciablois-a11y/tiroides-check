@@ -2,8 +2,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const API_KEY =  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 '';
-const PORT = 3000;
+const API_KEY = process.env.ANTHROPIC_API_KEY || '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';
+const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,7 +12,6 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  // Serve index.html
   if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
     const file = fs.readFileSync(path.join(__dirname, 'index.html'));
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -20,13 +19,11 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Proxy to Anthropic API
   if (req.method === 'POST' && req.url === '/api/ai') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
       try {
-        const key = API_KEY || JSON.parse(body)._key;
         const payload = JSON.parse(body);
         delete payload._key;
 
@@ -34,7 +31,7 @@ const server = http.createServer(async (req, res) => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': key,
+            'x-api-key': API_KEY,
             'anthropic-version': '2023-06-01'
           },
           body: JSON.stringify(payload)
