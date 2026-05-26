@@ -376,6 +376,13 @@ function rPanel(pc){
     <div class="met"><div class="ml">Próximo control</div><div class="mv" style="font-size:15px">Jul 2025</div><div class="ms">Recordatorio activo</div></div>
   </div>
 
+  ${(()=>{const myOrdenes=ORDENES.filter(o=>o.pid===CU.id&&o.st==='pendiente');return myOrdenes.length?myOrdenes.map(o=>`<div style="background:#eeedfe;border:1px solid #cecbf6;border-radius:var(--r);padding:14px 16px;margin-bottom:1rem;display:flex;gap:12px;align-items:flex-start">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3c3489" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+    <div style="flex:1"><div style="font-size:13px;font-weight:500;color:#3c3489;margin-bottom:4px">📋 Orden de examen — ${o.fechaEnvio}</div>
+    <div style="font-size:13px;color:#3c3489;margin-bottom:6px"><b>Exámenes solicitados:</b> ${o.exams.join(', ')}</div>
+    ${o.instrucciones?`<div style="font-size:12px;color:#5c58a0">${o.instrucciones}</div>`:''}
+    <div style="font-size:12px;color:#5c58a0;margin-top:4px">Fecha sugerida: <b>${o.fecha}</b></div></div>
+  </div>`).join(''):'';})()}
   ${pending.length?`<div class="pending-banner">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ba7517" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div><b>Examen en revisión</b><br><span style="color:var(--mu)">La Dra. Espinoza está revisando tu examen. Recibirás las indicaciones en tu correo una vez que las apruebe.</span></div>
@@ -883,6 +890,54 @@ async function crearPaciente(){
   }
 }
 
+const ORDENES=[];
+
+function abrirOrden(pid){
+  const p=Object.values(USERS).find(u=>u.id===pid);
+  const pr=PROF[pid]||{};
+  document.getElementById('mtitle').textContent='Orden de examen — '+(p?.name||'Paciente');
+  document.getElementById('mbody').innerHTML=`
+    <div class="inf" style="margin-bottom:1rem">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>La orden aparecerá en el panel de la paciente. Selecciona los exámenes que necesitas.</span>
+    </div>
+    <div class="f"><label>Exámenes solicitados</label>
+      <div id="ord-exams">
+        ${['TSH','T4 Libre','T3 Libre','Anticuerpos Anti-TPO','Anticuerpos Anti-Tiroglobulina','Tiroglobulina','Hemograma completo','Perfil lipídico','Glicemia','VHS'].map(ex=>`<div class="co" onclick="togC(this,'ord-exams')" data-v="${ex}"><span class="cb"></span>${ex}</div>`).join('')}
+      </div>
+    </div>
+    <div class="f"><label>Instrucciones para la paciente</label>
+      <textarea id="ord-inst" rows="3" placeholder="Ej: Exámenes en ayunas de 8 horas. Traer resultado al control."></textarea>
+    </div>
+    <div class="f"><label>Fecha sugerida para toma de muestra</label>
+      <input type="date" id="ord-fecha" value="${new Date(Date.now()+7*24*60*60*1000).toISOString().slice(0,10)}">
+    </div>`;
+  document.getElementById('mfoot').innerHTML=`
+    <button class="btn bs" onclick="cm()">Cancelar</button>
+    <button class="btn bp" onclick="enviarOrden('${pid}')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Enviar orden
+    </button>`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function enviarOrden(pid){
+  const exams=[...document.querySelectorAll('#ord-exams .co.sel')].map(e=>e.dataset.v);
+  if(!exams.length)return alert('Selecciona al menos un examen.');
+  const inst=document.getElementById('ord-inst').value;
+  const fecha=document.getElementById('ord-fecha').value;
+  const orden={id:'ord'+Date.now(),pid,fecha,exams,instrucciones:inst,
+    fechaEnvio:new Date().toISOString().slice(0,10),st:'pendiente'};
+  ORDENES.push(orden);
+  cm();
+  // Notificación
+  const banner=document.createElement('div');
+  banner.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--t);color:white;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:500;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,.2)';
+  banner.textContent='✓ Orden enviada a la paciente';
+  document.body.appendChild(banner);
+  setTimeout(()=>banner.remove(),3000);
+}
+
 function rDash(pc){
   const allP=Object.values(USERS).filter(u=>u.role==='patient');
   const pending=REV.filter(r=>r.st==='pending');
@@ -940,7 +995,10 @@ function oPat(pid){
     ${pr.sint?.length?`<div style="margin-bottom:.875rem"><div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Síntomas</div><div style="display:flex;flex-wrap:wrap;gap:5px">${pr.sint.map(s=>`<span style="background:#f0eeea;border-radius:20px;padding:2px 9px;font-size:12px">${s}</span>`).join('')}</div></div>`:''}
     <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:.5rem">Historial</div>
     ${rs.map(r=>`<div class="tli"><div class="tld ${r.st==='sent'?'dg':'da'}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${r.st==='sent'?'var(--t)':'#ba7517'}" stroke-width="2.5">${r.st==='sent'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/>'}</svg></div><div><div class="tt">${r.date} · TSH ${r.tsh}</div><div class="tm">Indicación: ${r.di||'?'} mcg · ${r.st==='sent'?'Aprobado':'Pendiente'}</div></div></div>`).join('')||'<p style="font-size:13px;color:var(--mu)">Sin controles.</p>'}`;
-  document.getElementById('mfoot').innerHTML=`<button class="btn bs" onclick="cm()">Cerrar</button>`;
+  document.getElementById('mfoot').innerHTML=`<button class="btn bs" onclick="cm()">Cerrar</button><button class="btn bp" onclick="cm();abrirOrden('${pid}')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Enviar orden de examen
+  </button>`;
   document.getElementById('modal').classList.add('open');
 }
 
