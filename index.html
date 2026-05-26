@@ -351,13 +351,13 @@ function startApp(){
   document.getElementById('nav-av').textContent=av;
   document.getElementById('nav-nm').textContent=(CU.name||'').split(' ').slice(0,2).join(' ');
   const links=CU.role==='doctor'
-    ?[['dash','Dashboard'],['pats','Pacientes'],['revs','Revisiones']]
+    ?[['dash','Dashboard'],['pats','Pacientes'],['revs','Revisiones'],['nuevo-paciente','+ Paciente']]
     :[['panel','Mi panel'],['upload','Subir examen'],['perfil','Mi perfil']];
   document.getElementById('nls').innerHTML=links.map(([id,l])=>`<button class="nl" id="nl-${id}" onclick="nav('${id}')">${l}</button>`).join('');
   nav(CU.role==='doctor'?'dash':'panel');
 }
 
-function nav(p){CP=p;document.querySelectorAll('.nl').forEach(l=>l.classList.remove('a'));const nl=document.getElementById('nl-'+p);if(nl)nl.classList.add('a');const pc=document.getElementById('pc');if(p==='panel')rPanel(pc);else if(p==='upload')rUpload(pc);else if(p==='perfil')rPerfil(pc);else if(p==='dash')rDash(pc);else if(p==='pats')rPats(pc);else if(p==='revs')rRevs(pc)}
+function nav(p){CP=p;document.querySelectorAll('.nl').forEach(l=>l.classList.remove('a'));const nl=document.getElementById('nl-'+p);if(nl)nl.classList.add('a');const pc=document.getElementById('pc');if(p==='panel')rPanel(pc);else if(p==='upload')rUpload(pc);else if(p==='perfil')rPerfil(pc);else if(p==='dash')rDash(pc);else if(p==='pats')rPats(pc);else if(p==='revs')rRevs(pc);else if(p==='nuevo-paciente')rNuevoPaciente(pc)}
 
 // ── PATIENT PANEL ──
 function rPanel(pc){
@@ -515,11 +515,27 @@ async function analyzeExam(pr,name){
 
   const prompt=`Eres un endocrinólogo experto de nivel consultor internacional, con conocimiento profundo de las guías clínicas de la American Thyroid Association (ATA 2014), European Thyroid Association (ETA), y la literatura endocrinológica actual sobre hipotiroidismo.
 
-TAREA: Analiza esta imagen de examen de laboratorio de tiroides (puede ser de laboratorios chilenos como UC Christus, Bupa, Integramédica, Clínica Las Condes, etc.) y:
-1. Extrae los valores de TSH y T4 libre con precisión
+TAREA: Analiza esta imagen de examen de laboratorio de tiroides chileno y:
+1. Extrae los valores de TSH y T4 libre con precisión — conoces todos los formatos de laboratorios chilenos
 2. Aplica criterio clínico experto considerando la historia del paciente
 3. Genera una recomendación de dosis semanal detallada
 4. Redacta el correo para la paciente
+
+LABORATORIOS CHILENOS QUE DEBES RECONOCER:
+- UC Christus / Red de Salud UC: TSH aparece como "Hormona Estimulante de la Tiroides (TSH)" en uUI/mL, T4 como "Tetrayodotironina (T4)" en ug/dL o "T4 Libre" en ng/dL
+- Complejo Asistencial / Hospitales públicos: TSH como "HORMONA TIROESTIMULANTE (TSH)" en uIU/mL, T4 libre como "T4 LIBRE" en ng/dL
+- Clínica Los Andes / Laboratorio Cordillera: TSH como "HORMONA TIROESTIMULANTE" en uUI/mL, T4 como "TIROXINA LIBRE" en ng/dL
+- Barnafi Krause (BK Lab): puede mostrar T3, T4 total en ug/dL y T4L en ng/dL — si no hay TSH explícito, extrae T4L
+- Clínica Andes Salud / otros: TSH en sección HORMONAS, puede estar abreviado como "TSH" directamente
+- Bupa, Integramédica, Clínica Las Condes: formatos similares con sección "Tiroides" o "Hormonas"
+
+NOMBRES ALTERNATIVOS QUE DEBES RECONOCER COMO TSH:
+"TSH", "Hormona Tiroestimulante", "Hormona Estimulante de la Tiroides", "Tirotropina", "Thyrotropin", "T.S.H."
+
+NOMBRES ALTERNATIVOS PARA T4 LIBRE:
+"T4 Libre", "T4L", "FT4", "Tiroxina Libre", "Tetrayodotironina Libre", "Free T4"
+
+Si el examen solo tiene T4 total (ug/dL) y no T4 libre, indícalo en el razonamiento. Si el valor de TSH aparece muy bajo (como 0.03 o 0.0334), es válido — no lo ignores.
 
 Responde ÚNICAMENTE con este JSON válido sin markdown ni texto adicional:
 {
@@ -651,6 +667,184 @@ function rPerfil(pc){
 }
 
 // ── DOCTOR ──
+function rNuevoPaciente(pc){
+  pc.innerHTML=`<div class="pg" style="max-width:600px">
+  <div class="st">Agregar paciente</div>
+  <div class="sub">Crea un paciente interno para hacer pruebas o revisiones sin que él/ella se registre.</div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Datos del paciente</div>
+    <div class="two">
+      <div class="f"><label>Nombre completo</label><input type="text" id="np-nombre" placeholder="Ej: María González"></div>
+      <div class="f"><label>Correo</label><input type="email" id="np-email" placeholder="correo@ejemplo.com"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem">
+      <div class="ro" id="np-sexo-f" onclick="document.getElementById('np-sexo-f').classList.add('sel');document.getElementById('np-sexo-m').classList.remove('sel')" style="flex:1"><span class="rd"></span>Femenino</div>
+      <div class="ro" id="np-sexo-m" onclick="document.getElementById('np-sexo-m').classList.add('sel');document.getElementById('np-sexo-f').classList.remove('sel')" style="flex:1"><span class="rd"></span>Masculino</div>
+    </div>
+    <div class="two">
+      <div class="f"><label>Peso (kg)</label><input type="number" id="np-peso" placeholder="65"></div>
+      <div class="f"><label>Talla (cm)</label><input type="number" id="np-talla" placeholder="165"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Diagnóstico y tratamiento</div>
+    <div class="two">
+      <div class="f"><label>Causa</label><select id="np-causa"><option value="">Seleccionar...</option><option>Tiroiditis de Hashimoto</option><option>Post-cirugía tiroidea</option><option>Post-radioyodo</option><option>Hipotiroidismo congénito</option><option>Sin causa identificada</option></select></div>
+      <div class="f"><label>Marca medicamento</label><select id="np-marca"><option value="">Seleccionar...</option><option>Eutirox</option><option>Synthroid</option><option>T4 Bago</option><option>T4 Alembic</option><option>Otra</option></select></div>
+    </div>
+    <div class="two">
+      <div class="f"><label>Dosis diaria (mcg)</label><input type="number" id="np-dosis" placeholder="100"></div>
+      <div class="f"><label>Administración</label><select id="np-admin"><option>En ayunas, 30 min antes del desayuno</option><option>Con o después del desayuno</option><option>La mezclo con otros fármacos</option><option>No siempre / olvido dosis</option></select></div>
+    </div>
+    <div class="f"><label>Otros medicamentos (opcional)</label><input type="text" id="np-otros" placeholder="Ej: Omeprazol, Calcio..."></div>
+    <div class="f"><label>Síntomas actuales (opcional)</label><textarea id="np-sint" placeholder="Ej: cansancio, frío frecuente, caída de cabello..."></textarea></div>
+  </div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div style="font-size:11px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:1rem">Examen de tiroides</div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem">
+      <div class="ro sel" id="np-modo-manual" onclick="document.getElementById('np-modo-manual').classList.add('sel');document.getElementById('np-modo-imagen').classList.remove('sel');document.getElementById('np-sec-manual').style.display='block';document.getElementById('np-sec-imagen').style.display='none'" style="flex:1"><span class="rd"></span>Ingresar valores manualmente</div>
+      <div class="ro" id="np-modo-imagen" onclick="document.getElementById('np-modo-imagen').classList.add('sel');document.getElementById('np-modo-manual').classList.remove('sel');document.getElementById('np-sec-imagen').style.display='block';document.getElementById('np-sec-manual').style.display='none'" style="flex:1"><span class="rd"></span>Subir foto o PDF del examen</div>
+    </div>
+    <div id="np-sec-manual" style="display:block">
+      <div class="two">
+        <div class="f"><label>TSH (mUI/L) <span style="color:#c0392b">*</span></label><input type="number" id="np-tsh" step="0.01" placeholder="Ej: 6.8"></div>
+        <div class="f"><label>T4 libre (ng/dL)</label><input type="number" id="np-t4l" step="0.01" placeholder="Ej: 1.1"></div>
+      </div>
+    </div>
+    <div id="np-sec-imagen" style="display:none">
+      <div class="uz" id="np-uz" style="margin-bottom:.875rem">
+        <input type="file" accept=".jpg,.jpeg,.png,.heic,.pdf" onchange="npOnFile(this)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--tm)" stroke-width="1.5" style="margin:0 auto 6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <p style="font-size:13px;color:var(--mu)"><b style="color:var(--t)">Clic o arrastra</b> el examen<br><span style="font-size:11px">JPG, PNG o PDF</span></p>
+      </div>
+      <div id="np-prev"></div>
+    </div>
+    <div class="f" style="margin-top:.5rem"><label>Fecha del examen</label><input type="date" id="np-fecha" value="${new Date().toISOString().slice(0,10)}"></div>
+    <div class="inf" style="margin-top:.5rem">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>La IA analizará el examen y aparecerá en Revisiones para que lo apruebes.</span>
+    </div>
+  </div>
+  <div id="np-result"></div>
+  <div style="display:flex;gap:10px;justify-content:flex-end">
+    <button class="btn bs" onclick="nav('pats')">Cancelar</button>
+    <button class="btn bp" id="np-btn" onclick="crearPaciente()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Crear paciente y analizar
+    </button>
+  </div>
+  </div>`;
+}
+
+let npB64=null;let npMime=null;
+
+function npOnFile(input){
+  if(!input.files[0])return;
+  const file=input.files[0];
+  const isPdf=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
+  const prev=document.getElementById('np-prev');
+  if(isPdf){
+    prev.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mu);padding:.5rem 0"><div class="sp"></div>Cargando PDF...</div>';
+    const reader=new FileReader();
+    reader.onload=async e=>{
+      try{
+        if(!window.pdfjsLib)await loadPdfJs();
+        const pdf=await window.pdfjsLib.getDocument({data:e.target.result}).promise;
+        const page=await pdf.getPage(1);
+        const vp=page.getViewport({scale:1.5});
+        const canvas=document.createElement('canvas');
+        canvas.width=vp.width;canvas.height=vp.height;
+        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+        npMime='image/jpeg';
+        const dataUrl=canvas.toDataURL('image/jpeg',.85);
+        npB64=dataUrl.split(',')[1];
+        prev.innerHTML='<img src="'+dataUrl+'" class="prev-img">';
+      }catch(err){prev.innerHTML='<div class="war">Error: '+err.message+'</div>'}
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const d=e.target.result;
+      npMime=file.type||'image/jpeg';
+      npB64=d.split(',')[1];
+      prev.innerHTML='<img src="'+d+'" class="prev-img">';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function crearPaciente(){
+  const nombre=document.getElementById('np-nombre').value.trim();
+  const email=document.getElementById('np-email').value.trim();
+  const modoImagen=document.getElementById('np-modo-imagen')&&document.getElementById('np-modo-imagen').classList.contains('sel');
+  const tsh=modoImagen?0:parseFloat(document.getElementById('np-tsh').value);
+  const t4l_raw=modoImagen?null:parseFloat(document.getElementById('np-t4l').value);
+  if(!nombre)return alert('Ingresa el nombre del paciente.');
+  if(!email)return alert('Ingresa el correo del paciente.');
+  if(!modoImagen&&(!tsh||isNaN(tsh)))return alert('Ingresa el valor de TSH.');
+  if(modoImagen&&!npB64)return alert('Sube el examen primero.');
+  const dosis=parseInt(document.getElementById('np-dosis').value)||100;
+  const marca=document.getElementById('np-marca').value||'Eutirox';
+  const causa=document.getElementById('np-causa').value||'Sin causa identificada';
+  const admin=document.getElementById('np-admin').value;
+  const peso=parseInt(document.getElementById('np-peso').value)||0;
+  const talla=parseInt(document.getElementById('np-talla').value)||0;
+  const otros=document.getElementById('np-otros').value||'Ninguno';
+  const sint=document.getElementById('np-sint').value||'No especificados';
+  const t4l=modoImagen?null:(t4l_raw||null);
+  const fecha=document.getElementById('np-fecha').value||new Date().toISOString().slice(0,10);
+  const sexoF=document.getElementById('np-sexo-f');
+  const sexo=sexoF&&sexoF.classList.contains('sel')?'femenino':'masculino';
+
+  const pid='p'+Date.now();
+  const correo=email.toLowerCase();
+  USERS[correo]={id:pid,pass:'interno',role:'patient',name:nombre};
+  PROF[pid]={dx:'No especificado',causa,dosis,marca,admin,peso,talla,
+    bienest:'No especificado',sint:[sint],notas:'',sexo,
+    otros_medicamentos:otros,semana:Array(7).fill(dosis),onboarded:true};
+
+  const btn=document.getElementById('np-btn');
+  btn.disabled=true;btn.innerHTML='<div class="sp"></div> Analizando...';
+  document.getElementById('np-result').innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:1rem 0;font-size:13px;color:var(--mu)"><div class="sp"></div>La IA está analizando el examen...</div>`;
+
+  try{
+    const pr=PROF[pid];
+    const medWarning=(otros&&otros!=='Ninguno')
+      ? 'ATENCION MEDICAMENTOS: Este paciente toma: '+otros+'. Es OBLIGATORIO incluir en el correo esta frase exacta: Recuerda tomar tu levotiroxina con al menos 4 horas de separacion de '+otros+', ya que puede reducir su absorcion.'
+      :'';
+    const semanaActual='Uniforme: '+dosis+' mcg/dia';
+    const saludo=sexo==='masculino'?'Estimado':'Estimada';
+    const promptText='Eres endocrinologa experta. Analiza este caso y genera recomendacion. Responde SOLO con JSON valido sin markdown: {"razonamiento":"...","nueva_dosis":100,"semana_nueva":[100,100,100,100,100,100,100],"accion":"mantener","correo_asunto":"...","correo_cuerpo":"..."}\n\nDATOS: Paciente '+nombre+' ('+sexo+'), '+peso+'kg, '+talla+'cm. Causa: '+causa+'. Dosis actual: '+dosis+' mcg '+marca+'. Admin: '+admin+'. Esquema: '+semanaActual+'. TSH: '+tsh+' mUI/L (normal 0.5-4.5). T4L: '+(t4l||'no disponible')+' ng/dL. Sintomas: '+sint+'. '+medWarning+'\n\nREGLAS: TSH>4.5 subir dosis; TSH<0.5 bajar dosis; TSH 0.5-4.5 mantener. Dosis disponibles: 25,50,75,88,100,112,125,150,175,200 mcg. semana_nueva debe ser array de 7 numeros.\nCORREO: Empezar con '+saludo+' '+nombre+', maximo 180 palabras, espanol chileno, sin anglicismos. Terminar con: Un saludo cordial, Dra. Carolina Espinoza Tu Tiroides Check';
+
+    let messages;
+    if(modoImagen&&npB64){
+      messages=[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:npMime,data:npB64}},
+        {type:'text',text:promptText+' Analiza también la imagen del examen para extraer TSH y T4L exactos. Incluye los valores encontrados en el campo razonamiento.'}
+      ]}];
+    } else {
+      messages=[{role:'user',content:promptText}];
+    }
+    const res=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:900,messages})});
+    const d=await res.json();
+    if(d.error)throw new Error(d.error.message);
+    const txt=d.content.map(c=>c.text||'').join('').trim().replace(/^```json\s*/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+    const ai=JSON.parse(txt);
+
+    const rev={id:'r'+Date.now(),pid,date:fecha,tsh,t4l,st:'pending',
+      reason:ai.razonamiento,di:ai.nueva_dosis,semana_nueva:ai.semana_nueva,
+      ac:ai.accion,email:ai.correo_cuerpo,asunto:ai.correo_asunto};
+    REV.unshift(rev);
+
+    document.getElementById('np-result').innerHTML='<div class="inf" style="margin-top:1rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><div><b>Paciente creado y examen analizado.</b> Aparece en Revisiones listo para aprobar.<br><span style="color:var(--mu);font-size:12px">TSH: '+tsh+' · IA recomienda: '+ai.nueva_dosis+' mcg ('+ai.accion+')</span></div></div><div style="margin-top:1rem;display:flex;gap:8px;justify-content:flex-end"><button class="btn bs" onclick="nav(\'nuevo-paciente\')">Agregar otro</button><button class="btn bp" onclick="nav(\'revs\')">Ver en Revisiones →</button></div>';
+    btn.style.display='none';
+  }catch(e){
+    btn.disabled=false;btn.innerHTML='Reintentar';
+    document.getElementById('np-result').innerHTML='<div class="war" style="margin-top:1rem">⚠ '+e.message+'</div>';
+  }
+}
+
 function rDash(pc){
   const allP=Object.values(USERS).filter(u=>u.role==='patient');
   const pending=REV.filter(r=>r.st==='pending');
