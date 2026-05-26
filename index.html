@@ -97,6 +97,7 @@ label{font-size:13px;font-weight:500}
 .pending-banner{background:#fef9ec;border:1px solid #f0d070;border-radius:var(--r);padding:16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:1rem}
 .pending-banner svg{flex-shrink:0;margin-top:1px}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -381,7 +382,11 @@ function rPanel(pc){
     <div style="flex:1"><div style="font-size:13px;font-weight:500;color:#3c3489;margin-bottom:4px">📋 Orden de examen — ${o.fechaEnvio}</div>
     <div style="font-size:13px;color:#3c3489;margin-bottom:6px"><b>Exámenes solicitados:</b> ${o.exams.join(', ')}</div>
     ${o.instrucciones?`<div style="font-size:12px;color:#5c58a0">${o.instrucciones}</div>`:''}
-    <div style="font-size:12px;color:#5c58a0;margin-top:4px">Fecha sugerida: <b>${o.fecha}</b></div></div>
+    <div style="font-size:12px;color:#5c58a0;margin-top:4px">Fecha sugerida: <b>${o.fecha}</b></div>
+    <div style="margin-top:10px"><button class="btn" onclick="descargarOrden('${o.id}')" style="background:#3c3489;color:white;font-size:12px;padding:7px 14px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Descargar orden PDF
+    </button></div></div>
   </div>`).join(''):'';})()}
   ${pending.length?`<div class="pending-banner">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ba7517" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -936,6 +941,108 @@ function enviarOrden(pid){
   banner.textContent='✓ Orden enviada a la paciente';
   document.body.appendChild(banner);
   setTimeout(()=>banner.remove(),3000);
+}
+
+function descargarOrden(oid){
+  const orden=ORDENES.find(o=>o.id===oid);
+  if(!orden)return;
+  const paciente=Object.values(USERS).find(u=>u.id===orden.pid);
+  const nombre=paciente?.name||'Paciente';
+
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const W=doc.internal.pageSize.getWidth();
+
+  // Header verde
+  doc.setFillColor(6,90,74);
+  doc.rect(0,0,W,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(16);doc.setFont('helvetica','bold');
+  doc.text('Tu Tiroides Check',14,12);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Seguimiento tiroideo online · Chile',14,20);
+  doc.text('tutiroidescheck.railway.app',W-14,20,{align:'right'});
+
+  // Título
+  doc.setTextColor(6,90,74);
+  doc.setFontSize(14);doc.setFont('helvetica','bold');
+  doc.text('ORDEN DE EXÁMENES DE LABORATORIO',14,40);
+
+  // Línea
+  doc.setDrawColor(6,90,74);
+  doc.setLineWidth(0.5);
+  doc.line(14,43,W-14,43);
+
+  // Datos paciente
+  doc.setTextColor(26,24,22);
+  doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text('Paciente:',14,52);
+  doc.setFont('helvetica','normal');
+  doc.text(nombre,55,52);
+
+  doc.setFont('helvetica','bold');
+  doc.text('Fecha emisión:',14,60);
+  doc.setFont('helvetica','normal');
+  doc.text(orden.fechaEnvio,55,60);
+
+  doc.setFont('helvetica','bold');
+  doc.text('Fecha sugerida:',14,68);
+  doc.setFont('helvetica','normal');
+  doc.text(orden.fecha,55,68);
+
+  // Exámenes
+  doc.setFillColor(232,245,242);
+  doc.rect(14,75,W-28,8,'F');
+  doc.setTextColor(6,90,74);
+  doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text('EXÁMENES SOLICITADOS',16,81);
+
+  doc.setTextColor(26,24,22);
+  doc.setFont('helvetica','normal');
+  let y=92;
+  orden.exams.forEach((ex,i)=>{
+    doc.setFillColor(i%2===0?245:255,i%2===0?243:255,i%2===0?239:255);
+    doc.rect(14,y-5,W-28,7,'F');
+    doc.text('• '+ex,18,y);
+    y+=9;
+  });
+
+  // Instrucciones
+  if(orden.instrucciones){
+    y+=4;
+    doc.setFillColor(254,249,236);
+    doc.rect(14,y-5,W-28,30,'F');
+    doc.setTextColor(122,92,0);
+    doc.setFont('helvetica','bold');
+    doc.text('Instrucciones:',16,y+2);
+    doc.setFont('helvetica','normal');
+    const lines=doc.splitTextToSize(orden.instrucciones,W-36);
+    doc.text(lines,16,y+10);
+    y+=35;
+  }
+
+  // Firma
+  y+=10;
+  doc.setTextColor(138,133,127);
+  doc.setFontSize(9);
+  doc.text('_______________________________',14,y);
+  y+=6;
+  doc.setTextColor(6,90,74);
+  doc.setFont('helvetica','bold');
+  doc.text('Dra. Carolina Espinoza',14,y);
+  y+=5;
+  doc.setTextColor(138,133,127);
+  doc.setFont('helvetica','normal');
+  doc.text('Médico Endocrinólogo · Tu Tiroides Check',14,y);
+
+  // Footer
+  doc.setFillColor(6,90,74);
+  doc.rect(0,doc.internal.pageSize.getHeight()-14,W,14,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8);
+  doc.text('Este documento es una orden médica emitida por Tu Tiroides Check. No constituye diagnóstico.',W/2,doc.internal.pageSize.getHeight()-5,{align:'center'});
+
+  doc.save('Orden_Examenes_'+nombre.replace(/ /g,'_')+'.pdf');
 }
 
 function rDash(pc){
