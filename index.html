@@ -453,17 +453,39 @@ function processFile(file){
       try{
         if(!window.pdfjsLib)await loadPdfJs();
         const pdf=await window.pdfjsLib.getDocument({data:e.target.result}).promise;
-        const page=await pdf.getPage(1);
-        const vp=page.getViewport({scale:1.5});
-        const canvas=document.createElement('canvas');
-        canvas.width=vp.width;canvas.height=vp.height;
-        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+        const numPages=pdf.numPages;
+        prev.innerHTML='<div style="font-size:13px;color:var(--mu);padding:.5rem 0">Procesando '+numPages+' página(s)...</div>';
+        
+        // Render all pages into a tall canvas to capture all data
+        const scale=1.5;
+        const canvases=[];
+        let totalHeight=0, maxWidth=0;
+        for(let p=1;p<=numPages;p++){
+          const page=await pdf.getPage(p);
+          const vp=page.getViewport({scale});
+          const c=document.createElement('canvas');
+          c.width=vp.width;c.height=vp.height;
+          await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+          canvases.push(c);
+          totalHeight+=vp.height;
+          if(vp.width>maxWidth)maxWidth=vp.width;
+        }
+        // Combine all pages into one image
+        const combined=document.createElement('canvas');
+        combined.width=maxWidth;
+        combined.height=totalHeight;
+        const ctx=combined.getContext('2d');
+        ctx.fillStyle='white';
+        ctx.fillRect(0,0,maxWidth,totalHeight);
+        let y=0;
+        for(const c of canvases){ctx.drawImage(c,0,y);y+=c.height;}
+        
         curMime='image/jpeg';
-        const dataUrl=canvas.toDataURL('image/jpeg',.85);
+        const dataUrl=combined.toDataURL('image/jpeg',.82);
         curB64=dataUrl.split(',')[1];
-        prev.innerHTML=`<img src="${dataUrl}" class="prev-img">`;
+        prev.innerHTML='<img src="'+dataUrl+'" class="prev-img"><div style="font-size:12px;color:var(--mu);margin-top:4px;text-align:center">'+numPages+' página(s) incluidas</div>';
         enableBtn();
-      }catch(err){prev.innerHTML=`<div class="war" style="margin-top:.875rem">⚠ Error: ${err.message}</div>`}
+      }catch(err){prev.innerHTML='<div class="war" style="margin-top:.875rem">⚠ Error: '+err.message+'</div>'}
     };
     reader.readAsArrayBuffer(file);
   } else {
@@ -750,15 +772,31 @@ function npOnFile(input){
       try{
         if(!window.pdfjsLib)await loadPdfJs();
         const pdf=await window.pdfjsLib.getDocument({data:e.target.result}).promise;
-        const page=await pdf.getPage(1);
-        const vp=page.getViewport({scale:1.5});
-        const canvas=document.createElement('canvas');
-        canvas.width=vp.width;canvas.height=vp.height;
-        await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+        const numPages=pdf.numPages;
+        prev.innerHTML='<div style="font-size:13px;color:var(--mu);padding:.5rem 0">Procesando '+numPages+' página(s)...</div>';
+        const scale=1.5;
+        const canvases=[];
+        let totalHeight=0,maxWidth=0;
+        for(let p=1;p<=numPages;p++){
+          const page=await pdf.getPage(p);
+          const vp=page.getViewport({scale});
+          const c=document.createElement('canvas');
+          c.width=vp.width;c.height=vp.height;
+          await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+          canvases.push(c);
+          totalHeight+=vp.height;
+          if(vp.width>maxWidth)maxWidth=vp.width;
+        }
+        const combined=document.createElement('canvas');
+        combined.width=maxWidth;combined.height=totalHeight;
+        const ctx=combined.getContext('2d');
+        ctx.fillStyle='white';ctx.fillRect(0,0,maxWidth,totalHeight);
+        let y=0;
+        for(const c of canvases){ctx.drawImage(c,0,y);y+=c.height;}
         npMime='image/jpeg';
-        const dataUrl=canvas.toDataURL('image/jpeg',.85);
+        const dataUrl=combined.toDataURL('image/jpeg',.82);
         npB64=dataUrl.split(',')[1];
-        prev.innerHTML='<img src="'+dataUrl+'" class="prev-img">';
+        prev.innerHTML='<img src="'+dataUrl+'" class="prev-img"><div style="font-size:12px;color:var(--mu);margin-top:4px;text-align:center">'+numPages+' página(s) incluidas</div>';
       }catch(err){prev.innerHTML='<div class="war">Error: '+err.message+'</div>'}
     };
     reader.readAsArrayBuffer(file);
