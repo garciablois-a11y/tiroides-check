@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const API_KEY = process.env.ANTHROPIC_API_KEY || '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';
+const API_KEY = process.env.ANTHROPIC_API_KEY || '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';
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(async (req, res) => {
