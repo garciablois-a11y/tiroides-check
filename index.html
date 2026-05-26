@@ -948,102 +948,117 @@ function descargarOrden(oid){
   if(!orden)return;
   const paciente=Object.values(USERS).find(u=>u.id===orden.pid);
   const nombre=paciente?.name||'Paciente';
+  const pr=PROF[orden.pid]||{};
 
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
   const W=doc.internal.pageSize.getWidth();
+  const H=doc.internal.pageSize.getHeight();
 
-  // Header verde
-  doc.setFillColor(6,90,74);
-  doc.rect(0,0,W,28,'F');
-  doc.setTextColor(255,255,255);
+  // Franja superior morada (estilo receta)
+  doc.setFillColor(120,100,160);
+  doc.rect(0,0,W,18,'F');
+
+  // Datos doctora (izquierda)
+  doc.setTextColor(40,30,60);
+  doc.setFontSize(12);doc.setFont('helvetica','bold');
+  doc.text('Dra. Carolina Espinoza',14,28);
+  doc.setFontSize(9);doc.setFont('helvetica','italic');
+  doc.setTextColor(80,70,110);
+  doc.text('Endocrinología Adultos',14,34);
+  doc.setFont('helvetica','normal');
+  doc.text('R.U.T.: 14.755.370-6',14,39);
+
+  // Logo tiroides simple (círculo con símbolo)
+  doc.setFillColor(200,190,220);
+  doc.circle(W-22,28,10,'F');
+  doc.setTextColor(120,100,160);
   doc.setFontSize(16);doc.setFont('helvetica','bold');
-  doc.text('Tu Tiroides Check',14,12);
+  doc.text('T',W-25,32);
+
+  // Línea separadora
+  doc.setDrawColor(200,190,220);
+  doc.setLineWidth(0.3);
+  doc.line(14,44,W-14,44);
+
+  // Cuadro datos paciente (fondo lavanda claro)
+  doc.setFillColor(240,237,250);
+  doc.rect(14,47,W-28,22,'F');
   doc.setFontSize(9);doc.setFont('helvetica','normal');
-  doc.text('Seguimiento tiroideo online · Chile',14,20);
-  doc.text('tutiroidescheck.railway.app',W-14,20,{align:'right'});
+  doc.setTextColor(80,70,110);
 
-  // Título
-  doc.setTextColor(6,90,74);
-  doc.setFontSize(14);doc.setFont('helvetica','bold');
-  doc.text('ORDEN DE EXÁMENES DE LABORATORIO',14,40);
+  doc.text('Nombre Paciente:',16,54);
+  doc.setFont('helvetica','bold');doc.setTextColor(30,20,50);
+  doc.text(nombre,55,54);
 
-  // Línea
-  doc.setDrawColor(6,90,74);
-  doc.setLineWidth(0.5);
-  doc.line(14,43,W-14,43);
+  doc.setFont('helvetica','normal');doc.setTextColor(80,70,110);
+  doc.text('Fecha:',16,62);
+  doc.setFont('helvetica','bold');doc.setTextColor(30,20,50);
+  doc.text(orden.fechaEnvio,35,62);
 
-  // Datos paciente
-  doc.setTextColor(26,24,22);
-  doc.setFontSize(10);doc.setFont('helvetica','bold');
-  doc.text('Paciente:',14,52);
-  doc.setFont('helvetica','normal');
-  doc.text(nombre,55,52);
+  doc.setFont('helvetica','normal');doc.setTextColor(80,70,110);
+  doc.text('Fecha sugerida muestra:',80,62);
+  doc.setFont('helvetica','bold');doc.setTextColor(30,20,50);
+  doc.text(orden.fecha,140,62);
 
-  doc.setFont('helvetica','bold');
-  doc.text('Fecha emisión:',14,60);
-  doc.setFont('helvetica','normal');
-  doc.text(orden.fechaEnvio,55,60);
+  // Rp: (orden de exámenes)
+  doc.setFontSize(16);doc.setFont('helvetica','bolditalic');
+  doc.setTextColor(80,70,110);
+  doc.text('Orden:',14,82);
 
-  doc.setFont('helvetica','bold');
-  doc.text('Fecha sugerida:',14,68);
-  doc.setFont('helvetica','normal');
-  doc.text(orden.fecha,55,68);
-
-  // Exámenes
-  doc.setFillColor(232,245,242);
-  doc.rect(14,75,W-28,8,'F');
-  doc.setTextColor(6,90,74);
-  doc.setFontSize(10);doc.setFont('helvetica','bold');
-  doc.text('EXÁMENES SOLICITADOS',16,81);
-
-  doc.setTextColor(26,24,22);
-  doc.setFont('helvetica','normal');
-  let y=92;
-  orden.exams.forEach((ex,i)=>{
-    doc.setFillColor(i%2===0?245:255,i%2===0?243:255,i%2===0?239:255);
-    doc.rect(14,y-5,W-28,7,'F');
-    doc.text('• '+ex,18,y);
-    y+=9;
+  // Lista de exámenes
+  doc.setFontSize(11);doc.setFont('helvetica','normal');
+  doc.setTextColor(30,20,50);
+  let y=94;
+  orden.exams.forEach(ex=>{
+    doc.text('• '+ex,22,y);
+    y+=8;
   });
 
   // Instrucciones
   if(orden.instrucciones){
     y+=4;
-    doc.setFillColor(254,249,236);
-    doc.rect(14,y-5,W-28,30,'F');
-    doc.setTextColor(122,92,0);
-    doc.setFont('helvetica','bold');
-    doc.text('Instrucciones:',16,y+2);
-    doc.setFont('helvetica','normal');
-    const lines=doc.splitTextToSize(orden.instrucciones,W-36);
-    doc.text(lines,16,y+10);
-    y+=35;
+    doc.setFillColor(240,237,250);
+    doc.rect(14,y-4,W-28,24,'F');
+    doc.setFontSize(9);doc.setFont('helvetica','bold');
+    doc.setTextColor(80,70,110);
+    doc.text('Instrucciones:',16,y+4);
+    doc.setFont('helvetica','normal');doc.setTextColor(30,20,50);
+    const lines=doc.splitTextToSize(orden.instrucciones,W-40);
+    doc.text(lines,16,y+12);
+    y+=28;
   }
 
-  // Firma
-  y+=10;
-  doc.setTextColor(138,133,127);
-  doc.setFontSize(9);
-  doc.text('_______________________________',14,y);
-  y+=6;
-  doc.setTextColor(6,90,74);
-  doc.setFont('helvetica','bold');
-  doc.text('Dra. Carolina Espinoza',14,y);
-  y+=5;
-  doc.setTextColor(138,133,127);
-  doc.setFont('helvetica','normal');
-  doc.text('Médico Endocrinólogo · Tu Tiroides Check',14,y);
+  // Firma (parte inferior)
+  const firmaY=H-45;
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.setTextColor(80,70,110);
+  doc.text('Fecha: '+orden.fechaEnvio,14,firmaY);
 
-  // Footer
-  doc.setFillColor(6,90,74);
-  doc.rect(0,doc.internal.pageSize.getHeight()-14,W,14,'F');
-  doc.setTextColor(255,255,255);
+  // Firma médico
+  doc.setDrawColor(80,70,110);
+  doc.setLineWidth(0.3);
+  doc.line(W-65,firmaY-2,W-14,firmaY-2);
+  doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.setTextColor(40,30,60);
+  doc.text('Dra. Carolina Espinoza',W-63,firmaY+5);
+  doc.setFont('helvetica','normal');doc.setTextColor(80,70,110);
+  doc.text('Endocrinología',W-63,firmaY+11);
+  doc.text('Rut: 14.755.370-6',W-63,firmaY+17);
   doc.setFontSize(8);
-  doc.text('Este documento es una orden médica emitida por Tu Tiroides Check. No constituye diagnóstico.',W/2,doc.internal.pageSize.getHeight()-5,{align:'center'});
+  doc.text('Firma Médico',W-63,firmaY+23);
+
+  // Franja inferior morada
+  doc.setFillColor(120,100,160);
+  doc.rect(0,H-12,W,12,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(7);doc.setFont('helvetica','normal');
+  doc.text('Tu Tiroides Check · Seguimiento tiroideo online · Este documento no constituye diagnóstico',W/2,H-4,{align:'center'});
 
   doc.save('Orden_Examenes_'+nombre.replace(/ /g,'_')+'.pdf');
 }
+
+function _descargarOrdenViejo(oid){
 
 function rDash(pc){
   const allP=Object.values(USERS).filter(u=>u.role==='patient');
